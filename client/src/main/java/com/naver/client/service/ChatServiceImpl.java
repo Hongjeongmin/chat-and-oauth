@@ -60,68 +60,6 @@ public class ChatServiceImpl implements ChatService {
 		return true;
 	}
 
-//
-//	@Override
-//	public List<ChatVo> selectChatListTest(int userId) {
-//
-//		/*
-//		 * init
-//		 */
-//		List<ChatVo> chats = new ArrayList<ChatVo>();
-//
-//		/*
-//		 * userId로 참여한 모든 채팅방 목록 조회
-//		 */
-//		List<Integer> chatIds = chatMemberRepo.selectChatUserIds(userId);
-//
-//		/*
-//		 * 각각의 chatId를 조회힌다.
-//		 */
-//
-//		/*
-//		 * members에는 나에대한 정보는 고정. 따라서 sql로 조회할 필요가 없다.
-//		 */
-////		ChatUserVo myVo = chatUserRepo.selectOneVo(userId);
-//
-//		for (int chatId : chatIds) {
-//
-//			/*
-//			 * chatId를 이용해서 chat값 반환.
-//			 */
-//			Chat chat = chatRepo.selectOne(chatId);
-//
-//			/*
-//			 * 채팅방의 lastMessage 조회
-//			 */
-//			LastMessageAndAt lastMessageAndAt = chatMessageRepo.selectLastMessageAndAt(chatId);
-//
-//			/*
-//			 * 읽지 않은 수 count
-//			 */
-//			int unreadCnt = chatMessageRepo.selectUnReadCount(chatId, userId);
-//
-//			/*
-//			 * test 1 나를 포함한 채팅방 참여자들 조회 3400ms
-//			 */
-//			List<ChatUserVo> members = chatUserRepo.selectChatMembers(chatId);
-//
-//			/*
-//			 * test 2 나를 포함하지 않은 채팅밤 참여자들 조회 3400ms
-//			 */
-////			List<ChatUserVo> members = chatUserRepo.selectChatFriends(chatId, userId);
-////			members.add(myVo);
-//
-//			/*
-//			 * chatVo 생성
-//			 */
-//			ChatVo chatVo = new ChatVo(chat, lastMessageAndAt, unreadCnt, members);
-//
-//			chats.add(chatVo);
-//		}
-//
-//		return chats;
-//	}
-
 	@Override
 	public List<ChatUserVo> selectChatMembers(int chatId) {
 		return chatUserRepo.selectChatMembers(chatId);
@@ -150,6 +88,10 @@ public class ChatServiceImpl implements ChatService {
 
 			chat.update(lastMessageAndAt, unreadCnt, members);
 		}
+		
+		/*
+		 * lastAt 순으로 오름차순 정렬
+		 */
 
 		return chats;
 	}

@@ -31,7 +31,7 @@ public class ChatFreindApiController extends BaseController {
 		
 		
 		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("friends", friendService.selectFriendVos(userId));
+		map.put("friends", friendService.selectFriendCahtUserVos(userId));
 		
 		return ResponseEntity.ok(new CommonResource(OK_CODE, OK,map));
 	}

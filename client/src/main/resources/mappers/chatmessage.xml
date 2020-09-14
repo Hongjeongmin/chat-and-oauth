@@ -16,11 +16,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</insert>
 	
 	<select id="selectMessageVoNoOption" parameterType="int" resultType="chatmessagevo">
-		select id,chatId,userId,content,sentAt,type from chatMessage where chatId=#{chatId} order by id DESC limit #{size}
+		(select id,chatId,userId,content,sentAt,type from chatMessage where chatId=#{chatId} order by id DESC limit #{size}) order by id asc;
 	</select>
 	
 	<select id="selectMessageVoLastMessageIdOption" parameterType="int" resultType="chatmessagevo">
-		select id,chatId,userId,content,sentAt,type from chatMessage where chatId=#{chatId} and id <![CDATA[ < ]]>	 #{lastMessageId} order by id DESC limit #{size}
+		<!-- select id,chatId,userId,content,sentAt,type from chatMessage where chatId=#{chatId} and id <![CDATA[ < ]]>	 #{lastMessageId} order by id DESC limit #{size} -->
+		(select id,chatId,userId,content,sentAt,type from chatMessage where chatId=#{chatId} and id <![CDATA[ < ]]>	 #{lastMessageId} order by id DESC limit #{size}) order by id asc;
 	</select>
 	
 </mapper>

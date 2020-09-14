@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.naver.client.repo.FriendRepo">
+	<insert id="insert" parameterType="int">
+		insert into friend(userId,friendId) values(#{userId},#{friendId})
+	</insert>
+	
+	<delete id="delete" parameterType="int">
+		delete from friend where userId = #{userId} and friendId = #{friendId}
+	</delete>
+	
+	<select id="selectFriends" parameterType="int" resultType="int">
+		select friendId from friend where userId = #{userId} 
+	</select>
+	
+	<select id="selectFriendNames" parameterType="int" resultType="String">
+		select chatUser.name from chatUser inner join friend on chatUser.id = friend.friendId where id in(select friendId from friend where userId =#{userId});
+	</select>
+	
+	<select id="selectFriendCahtUserVos" parameterType="int" resultType="chatuservo">
+	select chatUser.id, chatUser.name, chatUser.image from chatUser inner join friend on chatUser.id = friend.friendId where id in(select friendId from friend where userId =#{userId});
+	</select>
+</mapper>

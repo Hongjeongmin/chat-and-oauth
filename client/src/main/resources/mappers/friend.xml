@@ -12,6 +12,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</delete>
 	
 	<select id="selectFriends" parameterType="int" resultType="int">
-		select friendId from friend where userId = #{userId}
+		select friendId from friend where userId = #{userId} 
+	</select>
+	
+	<select id="selectFriendNames" parameterType="int" resultType="String">
+		select chatUser.name from chatUser inner join friend on chatUser.id = friend.friendId where id in(select friendId from friend where userId =#{userId});
+	</select>
+	
+	<select id="selectFriendCahtUserVos" parameterType="int" resultType="chatuservo">
+	select chatUser.id, chatUser.name, chatUser.image from chatUser inner join friend on chatUser.id = friend.friendId where id in(select friendId from friend where userId =#{userId})
+	order by chatUser.name asc;
 	</select>
 </mapper>

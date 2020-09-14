@@ -14,7 +14,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ChatVo {
+public class ChatVo{
 	int id;
 	String image;
 	String name;
@@ -47,7 +47,6 @@ public class ChatVo {
 			}
 			this.unreadCnt = unreadCnt;
 			this.members = members;
-		
-		
 	}
+
 }

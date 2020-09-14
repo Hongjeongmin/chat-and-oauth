@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.naver.client.common.JwtTokenProvider;
@@ -19,6 +20,7 @@ import com.naver.client.service.ChatUserService;
 import com.naver.client.vo.MessageVo;
 
 @RestController
+@CrossOrigin(origins = "*")
 public class ChatContoller {
 	@Autowired
 	JwtTokenProvider jwtTokenProvider;

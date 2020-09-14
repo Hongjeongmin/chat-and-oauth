@@ -30,16 +30,8 @@ public class FriendServiceImpl implements FriendService{
 	}
 
 	@Override
-	public List<ChatUserVo> selectFriendVos(int userId) {
-		List<Integer> friendIds = friendRepo.selectFriends(userId);
-		List<ChatUserVo>friendVos = new ArrayList<>();
-		
-		for(int id : friendIds) {
-			friendVos.add(chatUserRepo.selectOneVo(id));
-		}
-		
-		return friendVos;
-		
+	public List<ChatUserVo> selectFriendCahtUserVos(int userId) {
+		return friendRepo.selectFriendCahtUserVos(userId);
 	}
 
 }

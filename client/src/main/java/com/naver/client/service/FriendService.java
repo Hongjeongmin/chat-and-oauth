@@ -16,7 +16,7 @@ public interface FriendService {
 	boolean delete(int userId, int friendId);
 
 	/*
-	 * selectFriends 내가 친추한 모든 userId 를 반환한다.
+	 * userId를 기준으로 내가 친추한 모든 친구의 chatUserVo를 반환한다.
 	 */
-	List<ChatUserVo> selectFriendVos(int userId);
+	List<ChatUserVo> selectFriendCahtUserVos(int userId);
 }

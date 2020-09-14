@@ -21,7 +21,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</select>
 	
 	<select id="selectAllUserVos" parameterType="int" resultType="chatuservo">
-		select id,name,image from chatUser
+		select id,name,image from chatUser order by name asc
 	</select>
 	
 	<select id="selectOneVo" parameterType="int" resultType="chatuservo">
