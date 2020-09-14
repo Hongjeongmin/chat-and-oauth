@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<qualifiedTypeNameHistroy>
+    <fullyQualifiedTypeName name="java.util.Map"/>
+    <fullyQualifiedTypeName name="org.springframework.messaging.handler.annotation.Header"/>
+    <fullyQualifiedTypeName name="com.naver.client.dto.MessageDto"/>
+    <fullyQualifiedTypeName name="com.naver.client.dto.ChatJoinDto"/>
+    <fullyQualifiedTypeName name="com.naver.client.dto.ChatExitDto"/>
+    <fullyQualifiedTypeName name="com.naver.client.service.ChatUserService"/>
+    <fullyQualifiedTypeName name="java.lang.Enum"/>
+    <fullyQualifiedTypeName name="org.springframework.stereotype.Component"/>
+    <fullyQualifiedTypeName name="java.lang.Math"/>
+    <fullyQualifiedTypeName name="org.springframework.beans.factory.annotation.Autowired"/>
+    <fullyQualifiedTypeName name="com.naver.client.common.BasicImage"/>
+    <fullyQualifiedTypeName name="lombok.Getter"/>
+    <fullyQualifiedTypeName name="lombok.Setter"/>
+    <fullyQualifiedTypeName name="java.lang.StringBuilder"/>
+    <fullyQualifiedTypeName name="java.util.List"/>
+    <fullyQualifiedTypeName name="java.util.ArrayList"/>
+    <fullyQualifiedTypeName name="com.naver.client.vo.MessageVo"/>
+    <fullyQualifiedTypeName name="com.naver.client.mapper.ChatMessage"/>
+    <fullyQualifiedTypeName name="java.lang.Comparable"/>
+    <fullyQualifiedTypeName name="com.naver.client.vo.ChatUserVo"/>
+</qualifiedTypeNameHistroy>
