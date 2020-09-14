@@ -1,0 +1,35 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>main page</title>
+<style>
+div {
+  border: 1px solid gray;
+  padding: 8px;
+}
+
+h1 {
+  text-align: center;
+  text-transform: uppercase;
+  color: #4CAF50;
+}
+
+p {
+  text-indent: 50px;
+  text-align: justify;
+  letter-spacing: 3px;
+}
+
+a {
+  text-decoration: none;
+  color: #008CBA;
+}
+</style>
+</head>
+<body>
+
+	<h1>main view</h1>
+		<a th:href="@{(${oauthInfo.target_uri}+'/oauth/authorize')(client_id=${oauthInfo.client_id},redirect_uri=${oauthInfo.redirect_uri},response_type=code,scope=${oauthInfo.scope})}">홍정민 로그인</a><br>
+
+</body>
+</html>

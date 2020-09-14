@@ -1,0 +1,5 @@
+package com.naver.client.vo;
+
+public class MessageVo {
+
+}

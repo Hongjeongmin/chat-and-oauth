@@ -1,0 +1,21 @@
+package com.naver.client.mapper;
+
+
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter @Setter
+public class ChatMessage {
+	String type;
+	int id; 
+	int chatId; 
+	int userId; 
+	String content; 
+	long sentAt;
+	/*
+	 * 현재시간을 숫자로 저장한다.
+	 */
+	public void update() {
+		sentAt = System.currentTimeMillis();
+	} 
+}

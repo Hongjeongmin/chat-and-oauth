@@ -1,0 +1,5 @@
+package com.naver.client.dto;
+
+public class ChatExitDto {
+	int chatId;
+}

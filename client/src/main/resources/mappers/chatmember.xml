@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.naver.client.repo.ChatMemberRepo">
+	<insert id="insert" parameterType="int">
+		insert into chatMember(chatId,userId) values(#{chatId},#{userId})
+	</insert>
+	
+	<delete id="delete" parameterType="int">
+		delete from chatMember where chatId = #{chatId} and userId = #{userId}
+	</delete>
+	
+	<update id="updateReadTime" parameterType="chatmember">
+		update chatMember set readtime = #{readtime} where chatId = #{chatId} and userId = #{userId}
+	</update>
+	
+	<select id="selectChatUserIds" parameterType="int" resultType="int">
+		select chatId as id from chatMember where userId = #{userId}
+	</select>
+	
+	<select id="selectChatMemeberIds" parameterType="int" resultType="int">
+		select userId from chatMember where chatId = #{chatId}
+	</select>
+</mapper>

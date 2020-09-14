@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.naver.client.repo.ChatRepo">
+	<insert id="insert" parameterType="chat" useGeneratedKeys="true" keyProperty="id">
+		insert into chat(image,name,type) values(#{image},#{name},#{type})
+	</insert>
+	
+	<delete id="delete" parameterType="int">
+		delete from chat where id = #{id}
+	</delete>
+	
+	<select id="selectOne" parameterType="int" resultType="chat">
+		select id,image,name,type from chat where id = #{id}
+	</select>
+	
+	<select id="selectAllChatAsUserId" parameterType="int" resultType="chatvo">
+		select id,image,name, type from chat where id in(select chatId from chatMember where userId = #{userId})
+	</select>
+</mapper>
