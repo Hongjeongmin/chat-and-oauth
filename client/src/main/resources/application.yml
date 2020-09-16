@@ -85,7 +85,12 @@ spring:
     url : jdbc:mysql://10.113.121.48:13306/hjwDB?characterEncoding=UTF-8&serverTimezone=UTC
     username: hjw2
     password: hjw2
-    
+#local
+  redis:
+    host: localhost
+    port: 6379
+  profiles:
+    active: local        
 mybatis:
   type-aliases-package : com.naver.client.mapper com.naver.client.vo
   mapper-locations: mappers/**/*.xml

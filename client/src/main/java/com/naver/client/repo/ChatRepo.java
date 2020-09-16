@@ -28,5 +28,10 @@ public interface ChatRepo {
 	 */
 	
 	List<ChatVo> selectAllChatAsUserId(int userId);
+	
+	/*
+	 * 채팅방이 만들어진 시간 검색
+	 */
+	Long selectCreateTime(int id);
 
 }

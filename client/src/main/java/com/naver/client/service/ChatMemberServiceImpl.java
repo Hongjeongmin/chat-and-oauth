@@ -15,8 +15,8 @@ public class ChatMemberServiceImpl implements ChatMemberService{
 	ChatMemberRepo chatMemberRepo;
 	
 	@Override
-	public boolean insert(int chatId, int userId) {
-		return chatMemberRepo.insert(chatId, userId);
+	public boolean insert(int chatId, int userId,int act) {
+		return chatMemberRepo.insert(chatId, userId,act);
 	}
 
 	@Override
@@ -32,6 +32,26 @@ public class ChatMemberServiceImpl implements ChatMemberService{
 	@Override
 	public List<Integer> selectChatUserIds(int userId) {
 		return chatMemberRepo.selectChatUserIds(userId);
+	}
+
+	@Override
+	public boolean updateAct(int chatId, int userId, int act) {
+		return chatMemberRepo.updateAct(chatId, userId, act);
+	}
+
+	@Override
+	public int selectChatMemebersCnt(String chatId) {
+		return chatMemberRepo.selectChatMemebersCnt(chatId);
+	}
+
+	@Override
+	public boolean updateReadId(int chatId, int userId) {
+		return chatMemberRepo.updateReadId(chatId,userId);
+	}
+
+	@Override
+	public boolean updateReadId(int chatId, int userId, int lastreadId) {
+		return chatMemberRepo.updateReadIdWithValue(chatId, userId, lastreadId);
 	}
 
 }

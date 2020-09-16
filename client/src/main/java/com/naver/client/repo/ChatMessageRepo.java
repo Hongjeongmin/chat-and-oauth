@@ -5,6 +5,7 @@ import java.util.List;
 import com.naver.client.mapper.ChatMessage;
 import com.naver.client.mapper.LastMessageAndAt;
 import com.naver.client.vo.ChatMessageVo;
+import com.naver.client.vo.UnReadCountVo;
 
 public interface ChatMessageRepo {
 	/*
@@ -31,4 +32,9 @@ public interface ChatMessageRepo {
 	 * lastMessageId(optional)
 	 */
 	List<ChatMessageVo> selectMessageVoLastMessageIdOption(int chatId,int size,int lastMessageId);
+
+	/*
+	 * 읽지않은 메세지들을 조회한다.
+	 */
+	UnReadCountVo[] selectUnReadMessags(int userId, int chatId);
 }

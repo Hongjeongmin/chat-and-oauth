@@ -25,14 +25,14 @@
             <div class="input-group-prepend">
                 <label class="input-group-text">내용</label>
             </div>
-            <input type="text" class="form-control" v-model="content" v-on:keypress.enter="sendMessage('text')">
+            <input type="text" class="form-control" v-model="content" v-on:keypress.enter="sendMessage('TEXT')">
             <div class="input-group-append">
-                <button class="btn btn-primary" type="button" @click="sendMessage('text')">보내기</button>
+                <button class="btn btn-primary" type="button" @click="sendMessage('TEXT')">보내기</button>
         	</div>    	
    		</div>
         <ul class="list-group">
             <li class="list-group-item" v-for="message in messages">
-               id: {{message.userId}},type :  {{message.type}} :  content: {{message.content}}   sentAt :{{message.sentAt}}</a>
+              id : {{message.id}} userId: {{message.userId}},type :  {{message.type}} :  content: {{message.content}}   sentAt :{{message.sentAt}}  <span class="badge badge-info badge-pill">{{message.unreadCnt}}</span></a>
             </li>
         </ul>
     </div>
@@ -57,22 +57,52 @@
                 content: '',
                 messages: [],
                 access_token: '',
+                members : '',
+                invitedIds: [],
             },
             created() {
             	this.access_token = localStorage.getItem('access_token');
             	this.chatId = localStorage.getItem('wschat.chatId');
             	this.chatName = localStorage.getItem('wschat.chatName');
+            	var str =localStorage.getItem('wschat.invitedIds');
+            	str = str.substring(1,str.length-1);
+            	const invitedIds = [];
+            	console.log(str);
+            	var arr = str.split(",");
+            	for(var i =0;i<arr.length;i++){
+            		invitedIds.push(arr[i]*1);
+            	}
+            	this.invitedIds = invitedIds;
+            	console.log(this.invitedIds);
             	this.init();
             	// 실행시 초반 20개 불러오기
             	
             },
             methods: {
                 sendMessage: function(type) {
+                	if(this.messages.length==0){
+                	  console.log(this.invitedIds);
+              	      ws.send("/pub/chat/join", {"Authorization":this.access_token}, JSON.stringify({chatId:this.chatId, invitedIds:this.invitedIds}));
+                	}
                     ws.send("/pub/chat/message", {"Authorization":this.access_token}, JSON.stringify({type:type, chatId:this.chatId, content:this.content}));
                     this.content = '';
                 },
                 recvMessage: function(recv) {
-                    this.messages.unshift({"type":recv.type,"userId":recv.userId,"content":recv.content,"sentAt":recv.sentAt})
+                    this.messages.unshift({"id":recv.id,"type":recv.type,"userId":recv.userId,"content":recv.content,"sentAt":recv.sentAt,"unreadCnt":recv.unreadCnt})
+                },
+                recvMessages: function(recv) {
+                		console.log(this.messages.length);
+                		console.log(recv.length);
+                		var len = this.messages.length;
+                		var len2 = recv.length;
+                		for(i=0;i<len;i++){
+                			for(j=0;j<len2;j++){
+                					
+                				if(recv[j].id == this.messages[i].id){
+                					this.messages[i].unreadCnt = recv[j].unreadCnt;
+                				}
+                			}
+                		}
                 },
                 init: function(){
                 	axios.get('/api/chats/'+this.chatId,
@@ -83,15 +113,20 @@
                 	})
                 	.then(response=>{
                 		console.log(response);
-                		this.messages = response.data.data.messages;
+                		this.messages = response.data.data.messages.reverse();
                 	})
                 }
             }
         });
-    	ws.connect({},function(frame){
+        
+    	ws.connect({"Authorization":vm.$data.access_token},function(frame){
     		ws.subscribe("/sub/chat/rooms/"+vm.$data.chatId, function(message) {
                 var recv = JSON.parse(message.body);
-                vm.recvMessage(recv);
+                vm.recvMessage(recv.message);
+            });
+            ws.subscribe("/sub/chat/unreadCnt/"+vm.$data.chatId, function(message) {
+                var recv = JSON.parse(message.body);
+                vm.recvMessages(recv.messages);
             });
     	}, function(error){
     		alert("서버 연결에 실패 하였습니다. 다시 접속해 주세요");

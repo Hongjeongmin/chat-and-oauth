@@ -134,6 +134,18 @@
 			<artifactId>stomp-websocket</artifactId>
 			<version>2.3.3-1</version>
 		</dependency>
+		<!-- redis -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-redis</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>it.ozimov</groupId>
+			<artifactId>embedded-redis</artifactId>
+			<version>0.7.2</version>
+			<!-- local 환경에서는 이거사용하기 위해서 test 주석처리 -->
+			<!-- <scope>test</scope> -->
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>

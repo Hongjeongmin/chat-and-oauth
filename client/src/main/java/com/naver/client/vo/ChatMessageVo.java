@@ -1,5 +1,7 @@
 package com.naver.client.vo;
 
+import com.naver.client.redis.RedisChatRoomRepo;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,4 +13,9 @@ public class ChatMessageVo {
     String content;
     long sentAt;
     int unreadCnt;
+    
+    /*
+     * 
+     */
+
 }

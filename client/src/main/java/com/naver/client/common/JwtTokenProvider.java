@@ -22,7 +22,7 @@ public class JwtTokenProvider {
 	private String secretKey;
 
 	//TODO TEST 시간이라 Jwt 토큰 유효시간 크게 해놧음.
-	private long tokenValidMilisecond = 1000L * 60 * 60 * 30; // 1시간만 토큰 유효
+	private long tokenValidMilisecond = 1000L * 60 * 60 * 3000; // 1시간만 토큰 유효
 
 	/**
 	 * 이름으로 Jwt Token을 생성한다.

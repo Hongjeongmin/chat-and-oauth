@@ -1,10 +1,13 @@
 package com.naver.client.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,23 +19,27 @@ import com.naver.client.repo.ChatRepo;
 import com.naver.client.repo.ChatUserRepo;
 import com.naver.client.vo.ChatUserVo;
 import com.naver.client.vo.ChatVo;
+import com.naver.client.vo.UnReadCountVo;
 
 @Service
 public class ChatServiceImpl implements ChatService {
 	@Autowired
-	ChatRepo chatRepo;
+	private ChatRepo chatRepo;
 
 	@Autowired
-	ChatMemberRepo chatMemberRepo;
+	private ChatMemberRepo chatMemberRepo;
 
 	@Autowired
-	ChatMessageRepo chatMessageRepo;
+	private ChatMessageRepo chatMessageRepo;
 
 	@Autowired
-	ChatUserRepo chatUserRepo;
+	private ChatUserRepo chatUserRepo;
 
 	@Autowired
-	ModelMapper modelMapper;
+	private ModelMapper modelMapper;
+
+	@Autowired
+	private SimpMessageSendingOperations messaginTemplate;
 
 	@Override
 	public boolean delete(int id) {
@@ -41,22 +48,29 @@ public class ChatServiceImpl implements ChatService {
 
 	@Override
 	@Transactional
-	public boolean insert(Chat chat, List<Integer> members) {
+	public boolean insert(Chat chat, List<Integer> members, int myId) {
 		/*
-		 * members의 size == 2 : PRIVATE size >2 : GROUP
+		 * members의 size == 1 : PRIVATE size >2 : GROUP
 		 */
-		System.out.println(members.size());
-		if (members.size() == 2) {
+		if (members == null || members.size() == 0) {
+			chat.setType("SELF");
+		} else if (members.size() == 1) {
 			chat.setType("PRIVATE");
-		}else {
+		} else {
 			chat.setType("GROUP");
 		}
+		/*
+		 * 채팅 만드는시간 업데이트
+		 */
+		chat.update();
+
+		// TODO 개인톡방을 만들기만하고 말을 서로안한 상태에서는 연결을 어떻게할지 생각
 		chatRepo.insert(chat);
 		int chatId = chat.getId();
+		chatMemberRepo.insert(chatId, myId, 1);
 		for (int userId : members) {
-			chatMemberRepo.insert(chatId, userId);
+			chatMemberRepo.insert(chatId, userId, 0);
 		}
-
 		return true;
 	}
 
@@ -85,15 +99,56 @@ public class ChatServiceImpl implements ChatService {
 			 * 채팅방에 가입한 모든 멤버의 정보를 가져온다.
 			 */
 			List<ChatUserVo> members = chatUserRepo.selectChatMembers(chat.getId());
+			/*
+			 * 개인 채팅일 경우 null 을 넣는다.
+			 */
+			if ("PRIVATE".equals(chat.getType())) {
+				chat.setImage(null);
+				chat.setName(null);
+			}
 
-			chat.update(lastMessageAndAt, unreadCnt, members);
+			/*
+			 * 라스트 메세지와 시간 업데이트한다. 만약 라트스메세지가 없을경우 lastAt에 채팅방이 만들어진 시간을 set한다.
+			 */
+			chat.update(lastMessageAndAt, unreadCnt, members, chatRepo, chat.getId());
+
 		}
-		
+
 		/*
 		 * lastAt 순으로 오름차순 정렬
 		 */
 
 		return chats;
+	}
+
+	@Override
+	public String getChatId(String destination) {
+		int lastIndex = destination.lastIndexOf('/');
+		if ("/sub/chat/rooms".equals(destination.substring(0, lastIndex))) {
+			if (lastIndex != -1)
+				return destination.substring(lastIndex + 1);
+		}
+		return "Invalid";
+	}
+
+	@Override
+	public boolean updateRealtimeUnreadCount(int userId, int chatId) {
+
+		/*
+		 * 계산해서 만들엇음
+		 */
+		UnReadCountVo[] messages = chatMessageRepo.selectUnReadMessags(userId, chatId);
+
+		chatMemberRepo.updateReadId(chatId, userId);
+
+		/*
+		 * webSocket으로 메세지 날리기
+		 */
+
+		Map<String, Object> map = new HashMap<>();
+		map.put("messages", messages);
+		messaginTemplate.convertAndSend("/sub/chat/unreadCnt/" + chatId, map);
+		return true;
 	}
 
 }

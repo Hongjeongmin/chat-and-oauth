@@ -48,17 +48,24 @@
 			</div>
 			
 	        <ul class="list-group">
-	            <li class="list-group-item list-group-item-action" v-for="chat in chatrooms" v-bind:key="chat.id" v-on:click="enterRoom(chat.id, chat.name)">
-	                <h6>방제목 : {{chat.name}} , 타입 : {{chat.type}}, lastAt : {{chat.lastAt}}, lastMessage : {{chat.lastMessage}}<span class="badge badge-info badge-pill">{{chat.unreadCnt}}</span></h6>
+	            <li class="list-group-item list-group-item-action" v-for="chat in chatrooms" v-bind:key="chat.id" v-on:click="enterRoom(chat.id, chat.name,chat.members)">
+	                <h6>id :{{chat.id}} 방제목 : {{chat.name}} , 타입 : {{chat.type}}, lastAt : {{chat.lastAt}}, lastMessage : {{chat.lastMessage}}<span class="badge badge-info badge-pill">{{chat.unreadCnt}}</span></h6>
 	            </li>
 	        </ul>			
 
 		</div>
+		
 		<div v-if="access_token ===''">
- 			<a href="http://10.106.93.88:8090/oauth/authorize?client_id=207c813d-3b10-4e06-b752-32f3da69d87f&redirect_uri=http://localhost:8080/oauth/callback/WooJae&response_type=code&scope=name email phone">우재 로그인 </a> <br> 
+			<a href ="/oauth2/authorization/jeongmin">정민 로그인</a><br>
+			<a href ="/oauth2/authorization/woojae">우재 로그인</a><br>
+			<a href ="/oauth2/authorization/nathan">나단 로그인</a><br>
+			<a href ="/oauth2/authorization/daeun">다은 로그인</a><br>
+		
+		
+ 			<!-- <a href="http://10.106.93.88:8090/oauth/authorize?client_id=207c813d-3b10-4e06-b752-32f3da69d87f&redirect_uri=http://localhost:8080/oauth/callback/WooJae&response_type=code&scope=name email phone">우재 로그인 </a> <br> 
 			<a href="http://10.113.93.169:8080/oauth/authorize?client_id=3756e414-22b0-414d-8f19-f02e3b3b12c5&redirect_uri=http://localhost:8080/oauth/callback/NaDan&response_type=code&scope=name email phone">나단 로그인 </a> <br> 
 			<a href="http://10.113.98.87:8080/oauth/authorize?client_id=M6vYDUHzrpy32G06qe3c8YY7Ehb8Eh1A9W1Qg6Tn4efvn4A442lF37o1TX9b&redirect_uri=http://localhost:8080/oauth/callback/JeongMin&response_type=code&scope=read write trust">정민 로그인 </a> <br> 
-			<a href="">다은 로그인 </a> <br> 
+			<a href="">다은 로그인 </a> <br> -->
 			
 			<!-- <a href="http://10.106.93.88:8090/oauth/authorize?client_id=cf374e83-54ae-495e-8d37-42ce22addf7e&redirect_uri=http://10.113.100.202:8080/oauth/callback/WooJae&response_type=code&scope=name email phone">우재 로그인 </a> <br> 
 			<a href="http://10.113.93.169:8080/oauth/authorize?client_id=1aa5cac8-768b-4053-aba6-a07124746643&redirect_uri=http://10.113.100.202:8080/oauth/callback/NaDan&response_type=code&scope=name email phone">나단 로그인 </a> <br> 
@@ -71,7 +78,8 @@
 	<script src="/webjars/axios/0.17.1/dist/axios.min.js"></script>
 	<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
-
+    <script src="/webjars/sockjs-client/1.1.2/sockjs.min.js"></script>
+    <script src="/webjars/stomp-websocket/2.3.3-1/stomp.min.js"></script>
 
 	<script>
         var vm = new Vue({
@@ -84,6 +92,8 @@
                 users:[],
                 friends : "",
                 friendsSplit :[],
+                tmp:[],
+                name:'',
             },
             created() {
             	if($.cookie('access_token')!=null){
@@ -98,17 +108,18 @@
                 	this.access_token='';
                 },
                 createRoom: function() {
-                    if("" === this.room_name) {
-                        alert("방 제목을 입력해 주십시요.");
-                        return;
-                    } else {
+                   // if("" === this.room_name) {
+                   //     alert("방 제목을 입력해 주십시요.");
+                   //     return;
+                   // } else {
                     	
                       	this.friendsSplit = this.friends.split(',');
                       	this.friendIds=[];
                     	for(var index=0;index<this.friendsSplit.length;index++){
-                    		
-                    		this.friendIds.push(parseInt(this.friendsSplit[index]))
+                    		if(this.friendsSplit[index]!=' ')
+                    			this.friendIds.push(parseInt(this.friendsSplit[index]))
                     	}
+                    	console.log(this.friendIds);
                        axios.post('/api/chats',{
                     	   "image": "https://ww.namu.la/s/c090d6ba217e99e4906b9748e915a3d51c3712d79b05e10ce0eccae25f5f342385bf1621cbe538fda0f69ec9aaeede028ab7ab42c97b01f82dce7c666e31fe059a35fdad29101713302c100fc42395b90d6b0c2322515f7bc2d190e50632c0db",
                     	   "name": this.room_name,
@@ -124,7 +135,7 @@
                     	   alert("방 개설에 성공하였습니다.")
                     	   this.findAllRoom();
                        }).catch(response =>{alert("채팅발 개설 실패")});
-             	    }
+             	  //  }
            		},
            		findAllRoom : function(){
            			axios.get('/api/chats',{
@@ -144,10 +155,16 @@
            				this.users = data.data.data.users;
            			});
            		},
-           		enterRoom: function(id,name){
+           		enterRoom: function(id,name,members){
            			localStorage.setItem('wschat.chatId',id);
            			localStorage.setItem('wschat.chatName',name);
            			localStorage.setItem('access_token',this.access_token);
+           			var invitedIds =[];
+           			for(var i=0;i<members.length;i++){
+           				invitedIds.push(members[i].id);
+           			}
+           			var str = invitedIds.join(',')
+           			localStorage.setItem('wschat.invitedIds',JSON.stringify(str));
            			location.href="/chat/room/enter";
            		}
        		 }

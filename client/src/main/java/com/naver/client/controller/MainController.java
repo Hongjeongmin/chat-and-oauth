@@ -58,8 +58,26 @@ public class MainController {
 	@Autowired
 	ModelMapper modelMapper;
 	
+	@GetMapping("/oauth2/authorization/{server}")
+	public String redirectOauth(@PathVariable("server") String server) {
+		OauthInfo oauthInfo = new OauthInfo();
+		if("jeongmin".equals(server)) {
+			oauthInfo = modelMapper.map(jeongMin, OauthInfo.class);
+		}else if("woojae".equals(server)) {
+			oauthInfo = modelMapper.map(wooJae, OauthInfo.class);
+		}else if("nathan".equals(server)) {
+			oauthInfo = modelMapper.map(naDan, OauthInfo.class);
+		}else if("daeun".equals(server)) {
+			oauthInfo = modelMapper.map(daEun, OauthInfo.class);
+		}
+		
+		return  "redirect:"+oauthInfo.target_uri+"/oauth/authorize?client_id="+oauthInfo.client_id+"&redirect_uri="+oauthInfo.redirect_uri+"&response_type=code&scope="+oauthInfo.scope;
+		
+	}
+	
+	
 	@GetMapping("/oauth/callback/{server}")
-	public String test(@RequestParam("code") String code, HttpServletResponse response,
+	public String Callback(@RequestParam("code") String code, HttpServletResponse response,
 			@PathVariable("server") String server) throws JsonProcessingException, IOException {
 		ResponseEntity<String> responseEntity = null;
 		RestTemplate restTemplate = new RestTemplate();

@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.naver.client.mapper.Chat;
 import com.naver.client.mapper.LastMessageAndAt;
+import com.naver.client.repo.ChatRepo;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -40,10 +41,12 @@ public class ChatVo{
 		this.members = members;
 	}
 
-	public void update(LastMessageAndAt lastMessageAndAt, int unreadCnt, List<ChatUserVo> members) {
+	public void update(LastMessageAndAt lastMessageAndAt, int unreadCnt, List<ChatUserVo> members,ChatRepo chatRepo,int chatId) {
 			if(lastMessageAndAt!=null) {
 				this.lastMessage = lastMessageAndAt.getLastMessage();
 				this.lastAt = lastMessageAndAt.getLastAt();
+			}else {
+				this.lastAt =chatRepo.selectCreateTime(chatId);
 			}
 			this.unreadCnt = unreadCnt;
 			this.members = members;
