@@ -9,12 +9,14 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -57,6 +59,19 @@ public class MainController {
 	
 	@Autowired
 	ModelMapper modelMapper;
+	
+	private final Resource indexPage;
+	public MainController(@Value("classpath:/static/index.html") Resource indexPage) {
+		this.indexPage = indexPage;
+	}
+
+	@GetMapping(value = {"/", "/mail"})
+	public ResponseEntity<Resource> getFirstPage() {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.TEXT_HTML);
+		return new ResponseEntity<>(indexPage, headers, HttpStatus.OK);
+	}
+
 	
 	@GetMapping("/oauth2/authorization/{server}")
 	public String redirectOauth(@PathVariable("server") String server) {
@@ -167,17 +182,12 @@ public class MainController {
 		/*
 		 * 쿠키 저장
 		 */
-		Cookie cookie = new Cookie("access_token", token);
+		Cookie cookie = new Cookie("access-token", token);
 		cookie.setPath("/");
 		cookie.setMaxAge(60 * 60 * 24);
+		cookie.setHttpOnly(false);
 		response.addCookie(cookie);
 
-		return "redirect:/";
-	}
-	
-	//TODO 추후 제거 예정 현재는 테스트용으로 쓰는 중....
-	@GetMapping("/chat/room/enter")
-	public String tokenTest(@Header("token") String token) {
-		return "roomdetail";
+		return "/";
 	}
 }

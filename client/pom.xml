@@ -99,41 +99,6 @@
 			<artifactId>mysql-connector-java</artifactId>
 		</dependency>
 
-		<!-- ftl 사용 -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-freemarker</artifactId>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.webjars.bower/bootstrap -->
-		<dependency>
-			<groupId>org.webjars.bower</groupId>
-			<artifactId>bootstrap</artifactId>
-			<version>4.3.1</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.webjars.npm/vue -->
-		<dependency>
-			<groupId>org.webjars.bower</groupId>
-			<artifactId>vue</artifactId>
-			<version>2.5.16</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.webjars.npm/axios -->
-		<dependency>
-			<groupId>org.webjars.bower</groupId>
-			<artifactId>axios</artifactId>
-			<version>0.17.1</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.webjars/sockjs-client -->
-		<dependency>
-			<groupId>org.webjars</groupId>
-			<artifactId>sockjs-client</artifactId>
-			<version>1.1.2</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.webjars/stomp-websocket -->
-		<dependency>
-			<groupId>org.webjars</groupId>
-			<artifactId>stomp-websocket</artifactId>
-			<version>2.3.3-1</version>
-		</dependency>
 		<!-- redis -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -146,7 +111,44 @@
 			<!-- local 환경에서는 이거사용하기 위해서 test 주석처리 -->
 			<!-- <scope>test</scope> -->
 		</dependency>
+		<!-- naver -->
+		<dependency>
+			<groupId>com.naver.fever</groupId>
+			<artifactId>my-chat-app</artifactId>
+			<version>0.0.2</version>
+		</dependency>
 	</dependencies>
+	<repositories>
+		<repository>
+			<id>navercorp.release</id>
+			<name>Naver Corp. Release Repository</name>
+			<url>http://repo.navercorp.com/maven2/</url>
+			<releases>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>navercorp.snapshot</id>
+			<name>Navercorp Snapshot Repository</name>
+			<url>http://repo.navercorp.com/m2-snapshot-repository/</url>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+			</snapshots>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+		</repository>
+		<repository>
+			<id>central</id>
+			<url>https://repo1.maven.org/maven2</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</repository>
+	</repositories>
 	<build>
 		<plugins>
 			<plugin>

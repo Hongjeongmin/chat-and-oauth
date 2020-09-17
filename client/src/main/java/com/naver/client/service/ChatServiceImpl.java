@@ -1,6 +1,6 @@
 package com.naver.client.service;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.naver.client.mapper.Chat;
+import com.naver.client.mapper.ChatMessage;
 import com.naver.client.mapper.LastMessageAndAt;
 import com.naver.client.repo.ChatMemberRepo;
 import com.naver.client.repo.ChatMessageRepo;
@@ -19,6 +20,7 @@ import com.naver.client.repo.ChatRepo;
 import com.naver.client.repo.ChatUserRepo;
 import com.naver.client.vo.ChatUserVo;
 import com.naver.client.vo.ChatVo;
+import com.naver.client.vo.MessageVo;
 import com.naver.client.vo.UnReadCountVo;
 
 @Service
@@ -40,6 +42,9 @@ public class ChatServiceImpl implements ChatService {
 
 	@Autowired
 	private SimpMessageSendingOperations messaginTemplate;
+	
+	@Autowired
+	private ChatMessageService chatMessageService;
 
 	@Override
 	public boolean delete(int id) {
@@ -117,6 +122,7 @@ public class ChatServiceImpl implements ChatService {
 		/*
 		 * lastAt 순으로 오름차순 정렬
 		 */
+		Collections.sort(chats);
 
 		return chats;
 	}
@@ -143,12 +149,53 @@ public class ChatServiceImpl implements ChatService {
 
 		/*
 		 * webSocket으로 메세지 날리기
+		 * 날릴게 없으면 안보낸다.
 		 */
-
-		Map<String, Object> map = new HashMap<>();
-		map.put("messages", messages);
-		messaginTemplate.convertAndSend("/sub/chat/unreadCnt/" + chatId, map);
+		if (messages.length != 0) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("messages", messages);
+			messaginTemplate.convertAndSend("/sub/chat/unreadCnt/" + chatId, map);
+		}
 		return true;
+	}
+
+	@Override
+	public void outOfChat(int chatId, int userId) {
+		// TODO unReadCnt 갱신
+		UnReadCountVo[] messages = chatMessageRepo.selectUnReadMessags(userId, chatId);
+		/*
+		 * webSocket으로 메세지 날리기
+		 * 날릴게 없으면 안보낸다.
+		 */
+		// TODO 나갓다는 메세지 보내기
+		String name = chatUserRepo.selectOneName(userId);
+		
+		/*
+		 * 채팅방에 메세지 전송
+		 */
+		ChatMessage chatMessage = new ChatMessage();
+		chatMessage.setChatId(chatId);
+		chatMessage.setContent(name+"님이 나갔습니다");
+		chatMessage.setType("NOTI");
+
+		/*
+		 * DB에 저장
+		 */
+		chatMessageService.insert(chatMessage);
+		
+		Map<String, Object> map = new HashMap<>();
+		map.put("message", modelMapper.map(chatMessage, MessageVo.class));
+		messaginTemplate.convertAndSend("/sub/chat/rooms/" + chatId, map);
+		
+		/*
+		 * 갱신된 unReadCnt 보내기
+		 */
+		if (messages.length != 0) {
+			map = new HashMap<>();
+			map.put("messages", messages);
+			messaginTemplate.convertAndSend("/sub/chat/unreadCnt/" + chatId, map);
+		}
+
 	}
 
 }

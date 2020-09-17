@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.naver.client.repo.ChatMessageRepo">
+	<select id="selectLastMessageAndAt" parameterType="int" resultType="lastmessageandat">
+		select content as lastMessage, sentAt as lastAt from chatMessage where chatId = #{chatId} order by id desc limit 1
+	</select>
+	
+	<select id="selectUnReadCount" parameterType="int" resultType="int">
+	select count(id) from chatMessage where id > (select lastreadId from chatMember where chatId = #{chatId} and userId = #{userId})and chatId = #{chatId} and type ='TEXT'
+	</select>
+	
+	<insert id="insert" parameterType="chatmessage"  useGeneratedKeys="true" keyProperty="id">
+		insert into chatMessage(chatId,userId,content,sentAt,type,unreadCnt) values(#{chatId},#{userId},#{content},#{sentAt},#{type},#{unreadCnt})
+	</insert>
+	
+	<select id="selectMessageVoNoOption" parameterType="int" resultType="chatmessagevo">
+		<!-- (select id,chatId,userId,content,sentAt,type,unreadCnt from chatMessage where chatId=#{chatId} order by id DESC limit #{size}) order by id asc; -->
+		(select id,chatId,userId,content,sentAt,type,(select count(chatId) from chatMember where lastreadId <![CDATA[ < ]]>id and chatId=#{chatId}) as unreadCnt from chatMessage where chatId=#{chatId} order by id DESC limit #{size}) order by id asc;	
+	</select>
+	
+	<select id="selectMessageVoLastMessageIdOption" parameterType="int" resultType="chatmessagevo">
+		(select id,chatId,userId,content,sentAt,type,(select count(chatId) from chatMember where lastreadId <![CDATA[ < ]]>id and chatId=#{chatId}) as unreadCnt from chatMessage where chatId=#{chatId} and id <![CDATA[ < ]]>	 #{lastMessageId} order by id DESC limit #{size}) order by id asc;
+	</select>
+	
+	<select id="selectUnReadMessags" parameterType="int" resultType="unreadcountvo">
+		select id,(select count(chatId) from chatMember where lastreadId <![CDATA[ < ]]>id and chatId=#{chatId}) -1 as unreadCnt from chatMessage where(select lastreadId from chatMember where chatId =#{chatId} and userId=#{userId} ) <![CDATA[ < ]]> id and chatId = #{chatId};
+	</select>
+</mapper>

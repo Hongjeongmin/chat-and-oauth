@@ -27,7 +27,7 @@ public class CommonController extends BaseController {
 
 	@GetMapping("/check")
 	public ResponseEntity invalidToken(@RequestHeader("Authorization") String token) {
-
+		System.out.println("!!!!!?");
 		if (jwtTokenProvider.validateToken(token)) {
 			int userId = Integer.parseInt(jwtTokenProvider.getUserNameFromJwt(token));
 			Map<String, Object> map = new HashMap<>();
