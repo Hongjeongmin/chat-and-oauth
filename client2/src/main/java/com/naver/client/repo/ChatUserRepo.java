@@ -3,6 +3,7 @@ package com.naver.client.repo;
 import java.util.List;
 
 import com.naver.client.mapper.ChatUser;
+import com.naver.client.vo.ChatMemberVo;
 import com.naver.client.vo.ChatUserVo;
 
 public interface ChatUserRepo {
@@ -42,6 +43,7 @@ public interface ChatUserRepo {
 	 */
 	ChatUserVo selectOneVo(int id);
 	
+	
 	/*
 	 * 채팅방 참여인원 조회 나를 제외하고 반환한다
 	 */
@@ -51,7 +53,7 @@ public interface ChatUserRepo {
 	/*
 	 * 채팅방 참여인원 조회 나를 포함하고 반환한다.
 	 */
-	List<ChatUserVo> selectChatMembers(int chatId);
+	List<ChatMemberVo> selectChatMembers(int chatId);
 	
 	/*
 	 * username으로 id 조회

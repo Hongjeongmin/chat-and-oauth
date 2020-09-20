@@ -27,12 +27,10 @@ public class CommonController extends BaseController {
 
 	@GetMapping("/check")
 	public ResponseEntity invalidToken(@RequestHeader("Authorization") String token) {
-		System.out.println("!!!!!?");
 		if (jwtTokenProvider.validateToken(token)) {
 			int userId = Integer.parseInt(jwtTokenProvider.getUserNameFromJwt(token));
 			Map<String, Object> map = new HashMap<>();
 			
-			System.out.println(userId);
 			map.put("user", chatUserService.selectOneVo(userId));
 			return ResponseEntity.ok(new CommonResource(OK_CODE, OK, map));
 

@@ -17,6 +17,8 @@ import com.naver.client.resource.BaseResource;
 import com.naver.client.resource.CommonResource;
 import com.naver.client.service.ChatMessageService;
 
+import lombok.extern.slf4j.Slf4j;
+@Slf4j
 @RestController
 @RequestMapping("/api")
 @CrossOrigin(origins = "*")
@@ -27,12 +29,11 @@ public class CommonController extends BaseController {
 
 	@GetMapping("/check")
 	public ResponseEntity invalidToken(@RequestHeader("Authorization") String token) {
-
+		log.info("invalidToken");
 		if (jwtTokenProvider.validateToken(token)) {
 			int userId = Integer.parseInt(jwtTokenProvider.getUserNameFromJwt(token));
 			Map<String, Object> map = new HashMap<>();
 			
-			System.out.println(userId);
 			map.put("user", chatUserService.selectOneVo(userId));
 			return ResponseEntity.ok(new CommonResource(OK_CODE, OK, map));
 

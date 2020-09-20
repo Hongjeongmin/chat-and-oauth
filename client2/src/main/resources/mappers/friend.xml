@@ -21,6 +21,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	
 	<select id="selectFriendCahtUserVos" parameterType="int" resultType="chatuservo">
 	select chatUser.id, chatUser.name, chatUser.image from chatUser inner join friend on chatUser.id = friend.friendId where id in(select friendId from friend where userId =#{userId})
-	order by chatUser.name asc;
+	and userId=#{userId} order by chatUser.name asc;
 	</select>
 </mapper>

@@ -16,7 +16,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</select>
 	
 	<select id="selectAllChatAsUserId" parameterType="int" resultType="chatvo">
-		select id,image,name, type from chat where id in(select chatId from chatMember where userId = #{userId} and act = 1)
+		select id,image,name, type from chat where id in(select chatId from chatMember where userId = #{userId} and view = 1)
 	</select>
 	
 	<select id="selectCreateTime" parameterType="int" resultType="long">

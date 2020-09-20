@@ -19,6 +19,8 @@ import com.naver.client.dto.IdDto;
 import com.naver.client.resource.BaseResource;
 import com.naver.client.resource.CommonResource;
 
+import lombok.extern.slf4j.Slf4j;
+@Slf4j
 @RestController
 @RequestMapping("/api/friends")
 @CrossOrigin(origins = "*")
@@ -26,7 +28,7 @@ public class ChatFreindApiController extends BaseController {
 
 	@GetMapping
 	public ResponseEntity searchFriends(@RequestHeader("Authorization") String token) {
-		
+		log.info("searchFriends");
 		int userId = Integer.parseInt(jwtTokenProvider.getUserNameFromJwt(token));
 		
 		
@@ -38,6 +40,7 @@ public class ChatFreindApiController extends BaseController {
 
 	@PostMapping
 	public ResponseEntity createFriend(@RequestHeader("Authorization") String token,@RequestBody IdDto idDto) {
+		log.info("createFriend");
 		BaseResource resource = null;
 		int userId = Integer.parseInt(jwtTokenProvider.getUserNameFromJwt(token));
 		int friendId = idDto.getId();
@@ -53,6 +56,7 @@ public class ChatFreindApiController extends BaseController {
 
 	@DeleteMapping("/{friendId}")
 	public ResponseEntity deleteFriend(@RequestHeader("Authorization") String token,@PathVariable("friendId") int friendId) {
+		log.info("deleteFriend");
 		BaseResource resource = new BaseResource(OK_CODE, OK);
 		int userId = Integer.parseInt(jwtTokenProvider.getUserNameFromJwt(token));
 

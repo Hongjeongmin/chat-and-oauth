@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.naver.client.mapper.Chat;
 import com.naver.client.mapper.LastMessageAndAt;
+import com.naver.client.repo.ChatMemberRepo;
 import com.naver.client.repo.ChatRepo;
 
 import lombok.AllArgsConstructor;
@@ -23,9 +24,9 @@ public class ChatVo implements Comparable<ChatVo>{
 	Long lastAt;
 	String type;
 	int unreadCnt;
-	List<ChatUserVo> members;
+	List<ChatMemberVo> members;
 
-	public ChatVo(Chat chat, LastMessageAndAt lastMessageAndAt, int unreadCnt, List<ChatUserVo> members) {
+	public ChatVo(Chat chat, LastMessageAndAt lastMessageAndAt, int unreadCnt, List<ChatMemberVo> members) {
 
 		this.id = chat.getId();
 		this.image = chat.getImage();
@@ -41,12 +42,13 @@ public class ChatVo implements Comparable<ChatVo>{
 		this.members = members;
 	}
 
-	public void update(LastMessageAndAt lastMessageAndAt, int unreadCnt, List<ChatUserVo> members,ChatRepo chatRepo,int chatId) {
+	public void update(LastMessageAndAt lastMessageAndAt, int unreadCnt, List<ChatMemberVo> members,ChatMemberRepo chatMemberRepo,int chatId,int userId) {
 			if(lastMessageAndAt!=null) {
 				this.lastMessage = lastMessageAndAt.getLastMessage();
 				this.lastAt = lastMessageAndAt.getLastAt();
 			}else {
-				this.lastAt =chatRepo.selectCreateTime(chatId);
+//				this.lastAt =chatRepo.selectCreateTime(chatId);
+				this.lastAt = chatMemberRepo.selectOneJointime(userId, chatId);
 			}
 			this.unreadCnt = unreadCnt;
 			this.members = members;

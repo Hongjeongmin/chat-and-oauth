@@ -3,16 +3,20 @@ package com.naver.client.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.naver.client.mapper.ChatUser;
 import com.naver.client.repo.ChatUserRepo;
+import com.naver.client.vo.ChatMemberVo;
 import com.naver.client.vo.ChatUserVo;
 
 @Service
 public class ChatUserServiceImpl implements ChatUserService {
 
+	@Autowired
+	ModelMapper modelMapper;
 	@Autowired
 	ChatUserRepo chatUserRepo;
 
@@ -42,13 +46,13 @@ public class ChatUserServiceImpl implements ChatUserService {
 	}
 
 	@Override
-	public List<ChatUserVo> selectIds(List<Integer> ids) {
+	public List<ChatMemberVo> selectIds(List<Integer> ids) {
 
-		List<ChatUserVo> users = new ArrayList<>();
+		List<ChatMemberVo> members = new ArrayList<>();
 		for (int id : ids) {
-			users.add(chatUserRepo.selectOneVo(id));
+			members.add(modelMapper.map(chatUserRepo.selectOneVo(id), ChatMemberVo.class));
 		}
-		return users;
+		return members;
 	}
 
 	@Override
@@ -69,12 +73,16 @@ public class ChatUserServiceImpl implements ChatUserService {
 	@Override
 	public List<String> selectInvitedUsers(int[] invitedIds) {
 		List<String> list = new ArrayList<>();
-		
-		for(int invitedId : invitedIds) {
+
+		for (int invitedId : invitedIds) {
 			list.add(chatUserRepo.selectOneName(invitedId));
 		}
 		return list;
 	}
 
+	@Override
+	public List<ChatMemberVo> selectChatMembers(int chatId) {
+		return chatUserRepo.selectChatMembers(chatId);
+	}
 
 }

@@ -16,6 +16,7 @@
   </head>
   <body>
     <div class="container" id="app" v-cloak>
+  	<h1>{{myname}} : {{userId}}  {{chatType}}</h1>
         <div class="row">
             <div class="col-md-6">
                 <h3>{{chatName}}</h3>
@@ -42,7 +43,7 @@
     <script src="/webjars/sockjs-client/1.1.2/sockjs.min.js"></script>
     <script src="/webjars/stomp-websocket/2.3.3-1/stomp.min.js"></script>
     <script>
-    	var sock = new SockJS("/ws-chat");
+    	var sock = new SockJS("/ws/chat");
     	var ws = Stomp.over(sock);
     	var reconnect = 0;
     	
@@ -50,6 +51,7 @@
         var vm = new Vue({
             el: '#app',
             data: {
+            	myname:'',
             	id: '',
             	name: '',
                 chatId: '',
@@ -59,11 +61,17 @@
                 access_token: '',
                 members : '',
                 invitedIds: [],
+                userId : '',
+                chatType:'',
             },
             created() {
             	this.access_token = localStorage.getItem('access_token');
             	this.chatId = localStorage.getItem('wschat.chatId');
             	this.chatName = localStorage.getItem('wschat.chatName');
+            	this.myname = localStorage.getItem('myname');
+            	this.userId = localStorage.getItem('userId');
+            	this.chatType = localStorage.getItem('chatType');
+            	
             	var str =localStorage.getItem('wschat.invitedIds');
             	str = str.substring(1,str.length-1);
             	const invitedIds = [];
@@ -80,12 +88,21 @@
             },
             methods: {
                 sendMessage: function(type) {
-                	if(this.messages.length==0){
-                	  console.log(this.invitedIds);
-              	      ws.send("/pub/chat/join", {"Authorization":this.access_token}, JSON.stringify({chatId:this.chatId, invitedIds:this.invitedIds}));
-                	}
-                    ws.send("/pub/chat/message", {"Authorization":this.access_token}, JSON.stringify({type:type, chatId:this.chatId, content:this.content}));
-                    this.content = '';
+                	if(this.chatType=="GROUP"){
+	                	if(this.messages.length==0){
+	              	      ws.send("/pub/chat/group/join", {}, JSON.stringify({chatId:this.chatId, invitedIds:this.invitedIds}));
+	                	}
+	                    ws.send("/pub/chat/group/message", {}, JSON.stringify({type:type, chatId:this.chatId, content:this.content}));
+	                    this.content = '';
+                    }   
+                    else if(this.chatType=="PRIVATE"){
+                    	ws.send("/pub/chat/private/message", {}, JSON.stringify({type:type, chatId:this.chatId, content:this.content}));
+	                    this.content = '';
+                    }
+                    else if(this.chatType=="SELF"){
+                    	ws.send("/pub/chat/self/message", {}, JSON.stringify({type:type, chatId:this.chatId, content:this.content}));
+	                    this.content = '';
+                    }
                 },
                 recvMessage: function(recv) {
                     this.messages.unshift({"id":recv.id,"type":recv.type,"userId":recv.userId,"content":recv.content,"sentAt":recv.sentAt,"unreadCnt":recv.unreadCnt})
@@ -124,7 +141,7 @@
                 var recv = JSON.parse(message.body);
                 vm.recvMessage(recv.message);
             });
-            ws.subscribe("/sub/chat/unreadCnt/"+vm.$data.chatId, function(message) {
+            ws.subscribe("/sub/chat/unreadCnt/"+vm.$data.chatId+"/"+vm.$data.userId, function(message) {
                 var recv = JSON.parse(message.body);
                 vm.recvMessages(recv.messages);
             });

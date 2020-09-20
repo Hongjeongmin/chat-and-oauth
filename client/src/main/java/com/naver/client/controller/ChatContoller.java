@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -131,27 +132,27 @@ public class ChatContoller {
 	 * 일반 메시지 전송
 	 */
 	@MessageMapping("/chat/message")
-	public void sendMessage(MessageDto messageDto, @Header("Authorization") String token) {
-		
-		int userId = Integer.parseInt(jwtTokenProvider.getUserNameFromJwt(token));
+	public void sendMessage(MessageDto messageDto, StompHeaderAccessor header) {
+
+		int userId = redisChatRoomRepo.getSessionInfo(header.getSessionId());
 		ChatMessage chatMessage = modelMapper.map(messageDto, ChatMessage.class);
 		chatMessage.setUserId(userId);
+
 		/*
 		 * unReadCount 계산 전체 멤버수 - 현재 채팅을 구독중인 수
 		 */
 		int chatId = chatMessage.getChatId();
 		chatMessage.updateUnreadCnt(chatId, redisChatRoomRepo);
-
 		/*
 		 * db 에 저장한다.
 		 */
 		chatMessageService.insert(chatMessage);
-		
+
 		/*
 		 * 마지막 구독한 메세지 업데이트한다.
 		 */
-		for(int i: redisChatRoomRepo.getChatMembers(chatId)) {
-			chatmemberService.updateReadId(chatId, i,chatMessage.getId());
+		for (int i : redisChatRoomRepo.getChatMembers(chatId)) {
+			chatmemberService.updateReadId(chatId, i, chatMessage.getId());
 		}
 
 		/*

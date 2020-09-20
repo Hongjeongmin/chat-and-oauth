@@ -1,7 +1,5 @@
 package com.naver.client.vo;
 
-import com.naver.client.redis.RedisChatRoomRepo;
-
 import lombok.Getter;
 import lombok.Setter;
 

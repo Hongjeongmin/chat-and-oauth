@@ -4,24 +4,24 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.naver.client.repo.ChatMessageRepo">
 	<select id="selectLastMessageAndAt" parameterType="int" resultType="lastmessageandat">
-		select content as lastMessage, sentAt as lastAt from chatMessage where chatId = #{chatId} order by id desc limit 1
+		select content as lastMessage, sentAt as lastAt from chatMessage where chatId = 368 and sentAt >= (select jointime from chatMember where chatId = #{chatId} and userId=#{userId}) order by id desc limit 1;
 	</select>
 	
 	<select id="selectUnReadCount" parameterType="int" resultType="int">
-	select count(id) from chatMessage where id > (select lastreadId from chatMember where chatId = #{chatId} and userId = #{userId})and chatId = #{chatId} and type ='TEXT'
+	<!-- sentAt >= (select jointime from chatMember where chatId = #{chatId} and userId=#{userId}) 1:1 대화 안읽고 나갈경우 다시 내가 그방만들었다면? -->
+	select count(id) from chatMessage where id > (select lastreadId from chatMember where chatId = #{chatId} and userId = #{userId}) and chatId = #{chatId} and type ='TEXT' and sentAt >= (select jointime from chatMember where chatId = #{chatId} and userId=#{userId})
 	</select>
 	
 	<insert id="insert" parameterType="chatmessage"  useGeneratedKeys="true" keyProperty="id">
 		insert into chatMessage(chatId,userId,content,sentAt,type,unreadCnt) values(#{chatId},#{userId},#{content},#{sentAt},#{type},#{unreadCnt})
 	</insert>
 	
-	<select id="selectMessageVoNoOption" parameterType="int" resultType="chatmessagevo">
-		<!-- (select id,chatId,userId,content,sentAt,type,unreadCnt from chatMessage where chatId=#{chatId} order by id DESC limit #{size}) order by id asc; -->
-		(select id,chatId,userId,content,sentAt,type,(select count(chatId) from chatMember where lastreadId <![CDATA[ < ]]>id and chatId=#{chatId}) as unreadCnt from chatMessage where chatId=#{chatId} order by id DESC limit #{size}) order by id asc;	
+	<select id="selectMessageVoNoOption" parameterType="messagesearch" resultType="chatmessagevo">
+		(select id,chatId,userId,content,sentAt,type,(select count(chatId) from chatMember where lastreadId <![CDATA[ < ]]>id and chatId=#{chatId} and view=1) as unreadCnt from chatMessage where chatId=#{chatId} and sentAt <![CDATA[ >= ]]> #{jointime} order by id DESC limit #{size}) order by id asc;	
 	</select>
 	
-	<select id="selectMessageVoLastMessageIdOption" parameterType="int" resultType="chatmessagevo">
-		(select id,chatId,userId,content,sentAt,type,(select count(chatId) from chatMember where lastreadId <![CDATA[ < ]]>id and chatId=#{chatId}) as unreadCnt from chatMessage where chatId=#{chatId} and id <![CDATA[ < ]]>	 #{lastMessageId} order by id DESC limit #{size}) order by id asc;
+	<select id="selectMessageVoLastMessageIdOption" parameterType="messagesearch" resultType="chatmessagevo">
+		(select id,chatId,userId,content,sentAt,type,(select count(chatId) from chatMember where lastreadId <![CDATA[ < ]]>id and chatId=#{chatId} and view=1) as unreadCnt from chatMessage where chatId=#{chatId} and id <![CDATA[ < ]]>	 #{lastMessageId} and sentAt <![CDATA[ >= ]]> #{jointime} order by id DESC limit #{size}) order by id asc;
 	</select>
 	
 	<select id="selectUnReadMessags" parameterType="int" resultType="unreadcountvo">

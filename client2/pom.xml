@@ -146,6 +146,7 @@
 			<!-- local 환경에서는 이거사용하기 위해서 test 주석처리 -->
 			<!-- <scope>test</scope> -->
 		</dependency>
+		
 	</dependencies>
 	
 	<build>

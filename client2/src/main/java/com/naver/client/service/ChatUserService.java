@@ -3,6 +3,7 @@ package com.naver.client.service;
 import java.util.List;
 
 import com.naver.client.mapper.ChatUser;
+import com.naver.client.vo.ChatMemberVo;
 import com.naver.client.vo.ChatUserVo;
 
 public interface ChatUserService {
@@ -45,12 +46,21 @@ public interface ChatUserService {
 	/*
 	 * ids에 있는 값을 조회해서 List<ChatUserVo> 형태로 반환 
 	 */
-	List<ChatUserVo> selectIds(List<Integer> ids);
+	List<ChatMemberVo> selectIds(List<Integer> ids);
 	
 	/*
 	 * username으로 id 조회
 	 */
 	int selectIdAsUsername(String username);
-
+	
+	
+	/*
+	 * user를 활성화시킨다.
+	 */
 	List<String> selectInvitedUsers(int[] invitedIds);
+	
+	/*
+	 * chat에참가한 모든 members의 정보를 가져온다.
+	 */
+	List<ChatMemberVo> selectChatMembers(int chatId);
 }

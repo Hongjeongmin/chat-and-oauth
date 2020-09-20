@@ -3,17 +3,18 @@ package com.naver.client.repo;
 import java.util.List;
 
 import com.naver.client.mapper.ChatMember;
+import com.naver.client.vo.ChatPrivateMemberVo;
 
 public interface ChatMemberRepo {
 	/*
 	 * insert chatMember table
 	 */
-	boolean insert(int chatId,int userId,int act);
+	boolean insert(ChatMember chatMember);
 	
 	/*
-	 * update chatMember act
+	 * update chatMember view
 	 */
-	boolean updateAct(int chatId,int userId,int act);
+	boolean updateView(ChatMember chatMember);
 	/*
 	 * delete  chatMember table
 	 */
@@ -45,6 +46,26 @@ public interface ChatMemberRepo {
 	boolean updateReadId(int chatId, int userId);
 
 	boolean updateReadIdWithValue(int chatId, int userId, int lastreadId);
+	
+	/*
+	 * 내아이디와 채팅방의 아이디정보로 상대방이 현재 채팅방이 활성화되어있는 상태인지 확
+	 */
+	ChatPrivateMemberVo selectPrivateChatMemberView(int userId, int chatId);
+	
+	/*
+	 * join시 view를 활성화시키고 데이트시킨다.
+	 */
+	boolean updateJoin(ChatMember chatMember);
+	
+	/*
+	 * jointime 조회
+	 */
+	long selectOneJointime(int userId, int chatId);
+	
+	/*
+	 * chatId에 참여한 모든 userId를 반환한다.
+	 */
+	int[] selectChatMemberUserIds(int chatId);
 	
 
 }

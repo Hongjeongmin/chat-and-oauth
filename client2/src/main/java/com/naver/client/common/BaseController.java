@@ -4,6 +4,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
+import com.naver.client.redis.RedisChatRoomRepo;
 import com.naver.client.service.ChatMemberService;
 import com.naver.client.service.ChatMessageService;
 import com.naver.client.service.ChatService;
@@ -20,7 +21,10 @@ public class BaseController {
 
 	@Autowired
 	public ModelMapper modelMapper;
-
+	
+	@Autowired
+	public RedisChatRoomRepo redisChatRoomRepo;
+	
 	public static final int testId = 1;
 
 	/*

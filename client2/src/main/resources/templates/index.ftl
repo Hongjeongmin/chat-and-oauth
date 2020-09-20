@@ -16,6 +16,8 @@
 </head>
 <body>
 	<div class="container" id="app" v-cloak>
+		<h1>{{myname}}</h1>
+	
 		<div v-if="access_token !='' && access_token!='undefined'">
 			<div class="row">
 				<div class="col-md-6">
@@ -48,8 +50,9 @@
 			</div>
 			
 	        <ul class="list-group">
-	            <li class="list-group-item list-group-item-action" v-for="chat in chatrooms" v-bind:key="chat.id" v-on:click="enterRoom(chat.id, chat.name,chat.members)">
-	                <h6>id :{{chat.id}} 방제목 : {{chat.name}} , 타입 : {{chat.type}}, lastAt : {{chat.lastAt}}, lastMessage : {{chat.lastMessage}}<span class="badge badge-info badge-pill">{{chat.unreadCnt}}</span></h6>
+	            <li class="list-group-item list-group-item-action" v-for="chat in chatrooms" v-bind:key="chat.id">
+	                <div v-on:click="enterRoom(chat.id, chat.name,chat.members,chat.type)"> <h6>id :{{chat.id}} 방제목 : {{chat.name}} , 타입 : {{chat.type}}, lastAt : {{chat.lastAt}}, lastMessage : {{chat.lastMessage}}<span class="badge badge-info badge-pill">{{chat.unreadCnt}}</span></h6></div>
+	           		 <button @click="deleteRoom(chat.id)">나가기</button>
 	            </li>
 	        </ul>			
 
@@ -82,9 +85,12 @@
     <script src="/webjars/stomp-websocket/2.3.3-1/stomp.min.js"></script>
 
 	<script>
+	    var sock = new SockJS("/ws/chat");
+    	var ws = Stomp.over(sock);
         var vm = new Vue({
             el: '#app',
             data: {
+            	myname :'',
                	access_token : '',
                 room_name : '',
                 friendIds :[],
@@ -94,6 +100,7 @@
                 friendsSplit :[],
                 tmp:[],
                 name:'',
+                userId:'',
             },
             created() {
             	if($.cookie('access_token')!=null){
@@ -101,11 +108,37 @@
             		this.findAllRoom();
             		this.findAllUsers();
             	}
+            	this.invalid();
+            	
             },
             methods: {
                 logout: function() {
                 	$.removeCookie('access_token');
                 	this.access_token='';
+                },
+               	deleteRoom: function(id) {
+               		var chatIds =[];
+               		chatIds.push(id*1);
+               		axios.post('api/chats/delete',{
+               			chatIds : chatIds,
+               		}
+               		
+               		,{
+               			headers:{
+               				Authorization : this.access_token
+               			}
+               		}).then(data=>{
+               		})
+                },
+                invalid: function(){	
+               		axios.get('/api/check',{
+               			headers:{
+               				Authorization : this.access_token
+               			}
+               		}).then(data=>{
+               			this.myname = data.data.data.user.name;
+               			this.userId = data.data.data.user.id;
+               		})
                 },
                 createRoom: function() {
                    // if("" === this.room_name) {
@@ -155,10 +188,13 @@
            				this.users = data.data.data.users;
            			});
            		},
-           		enterRoom: function(id,name,members){
+           		enterRoom: function(id,name,members,type){
            			localStorage.setItem('wschat.chatId',id);
            			localStorage.setItem('wschat.chatName',name);
            			localStorage.setItem('access_token',this.access_token);
+           			localStorage.setItem('myname',this.myname);
+           			localStorage.setItem('userId',this.userId);
+           			localStorage.setItem('chatType',type);
            			var invitedIds =[];
            			for(var i=0;i<members.length;i++){
            				invitedIds.push(members[i].id);
@@ -166,10 +202,34 @@
            			var str = invitedIds.join(',')
            			localStorage.setItem('wschat.invitedIds',JSON.stringify(str));
            			location.href="/chat/room/enter";
-           		}
+           		},
+           		recvMessage: function(recv) {
+           			if("EXIST" == recv.type){
+           				var len = this.chatrooms.length;
+           				for(var i=0;i<len;i++){
+           					if(recv.chat.id == this.chatrooms[i].id){
+           						this.chatrooms[i].lastAt = recv.chat.lastAt;
+           						this.chatrooms[i].lastMessage = recv.chat.lastMessage;
+           						this.chatrooms[i].unreadCnt = recv.chat.unreadCnt;
+           					}
+           				}
+           			}
+           			if("NEW" == recv.type){
+           				this.chatrooms.unshift({"id" : recv.chat.id, "name" : recv.chat.name, "lastMessage" : recv.chat.lastMessage, "lastAt": recv.chat.lastAt, "type" : recv.chat.type, "unreadCnt" : recv.chat.unreadCnt, "members":recv.chat.members});
+           			}
+                }
        		 }
             
         });
+        
+        ws.connect({"Authorization":vm.$data.access_token},function(frame){
+    		ws.subscribe("/sub/chat/list/"+vm.$data.userId, function(message) {
+                var recv = JSON.parse(message.body);
+                vm.recvMessage(recv);
+            });
+
+    	}, function(error){
+    	})
     </script>
 </body>
 </html>

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.naver.client.mapper.ChatMessage;
+import com.naver.client.mapper.MessageSearch;
 import com.naver.client.repo.ChatMessageRepo;
 import com.naver.client.vo.ChatMessageVo;
 
@@ -22,13 +23,18 @@ public class ChatMessageServiceImpl implements ChatMessageService{
 	}
 
 	@Override
-	public List<ChatMessageVo> selectMessageVoNoOption(int chatId, int size) {
-		return chatMessageRepo.selectMessageVoNoOption(chatId, size);
+	public List<ChatMessageVo> selectMessageVoNoOption(MessageSearch messageSearch) {
+		return chatMessageRepo.selectMessageVoNoOption(messageSearch);
 	}
 
 	@Override
-	public List<ChatMessageVo> selectMessageVoLastMessageIdOption(int chatId, int size, int lastMessageId) {
-		return chatMessageRepo.selectMessageVoLastMessageIdOption(chatId, size, lastMessageId);
+	public List<ChatMessageVo> selectMessageVoLastMessageIdOption(MessageSearch messageSearch) {
+		return chatMessageRepo.selectMessageVoLastMessageIdOption(messageSearch);
+	}
+
+	@Override
+	public int selectUnReadCount(int chatId, int userId) {
+		return chatMessageRepo.selectUnReadCount(chatId, userId);
 	}
 
 }

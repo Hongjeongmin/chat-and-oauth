@@ -13,12 +13,15 @@ import org.springframework.web.bind.annotation.RestController;
 import com.naver.client.common.BaseController;
 import com.naver.client.resource.CommonResource;
 
+import lombok.extern.slf4j.Slf4j;
+@Slf4j
 @RestController
 @RequestMapping("/api/users")
 @CrossOrigin(origins = "*")
 public class ChatUserApiController extends BaseController {
 	@GetMapping
 	public ResponseEntity searchAllUsers(@RequestHeader("Authorization") String token) {
+		log.info("searchAllUsers");
 		Map<String, Object> map = new HashMap<>();
 		map.put("users", chatUserService.selectAllUserVos());
 		

@@ -32,8 +32,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		select  id,name,image from chatUser where id in (select userId from chatMember where chatId = #{chatId} and userId != #{userId})
 	</select>
 	
-	<select id="selectChatMembers" parameterType="int" resultType="chatuservo">
-		select  id,name,image from chatUser where id in (select userId from chatMember where chatId = #{chatId})
+	<select id="selectChatMembers" parameterType="int" resultType="chatmembervo">
+		select  id,name,image,active from chatUser join chatMember on id=userId where id in (select userId from chatMember where chatId = #{chatId})and chatId = #{chatId}
 	</select>
 	
 	<select id="selectIdAsUsername" parameterType="String" resultType="int">

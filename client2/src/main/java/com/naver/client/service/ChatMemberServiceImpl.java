@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.naver.client.mapper.ChatMember;
 import com.naver.client.repo.ChatMemberRepo;
 import com.naver.client.repo.ChatRepo;
+import com.naver.client.vo.ChatPrivateMemberVo;
 
 @Service
 public class ChatMemberServiceImpl implements ChatMemberService{
@@ -20,8 +21,8 @@ public class ChatMemberServiceImpl implements ChatMemberService{
 	
 	
 	@Override
-	public boolean insert(int chatId, int userId,int act) {
-		return chatMemberRepo.insert(chatId, userId,act);
+	public boolean insert(ChatMember chatMember) {
+		return chatMemberRepo.insert(chatMember);
 	}
 
 	@Override
@@ -31,7 +32,7 @@ public class ChatMemberServiceImpl implements ChatMemberService{
 			/*
 			 * 1:1 채팅방의 경우 비활성화
 			 */
-			return chatMemberRepo.updateAct(chatId, userId, 0);
+			return chatMemberRepo.updateView(new ChatMember(chatId, userId, false));
 		}
 		
 		return chatMemberRepo.delete(chatId, userId);
@@ -48,8 +49,8 @@ public class ChatMemberServiceImpl implements ChatMemberService{
 	}
 
 	@Override
-	public boolean updateAct(int chatId, int userId, int act) {
-		return chatMemberRepo.updateAct(chatId, userId, act);
+	public boolean updateView(ChatMember chatMember) {
+		return chatMemberRepo.updateView(chatMember);
 	}
 
 	@Override
@@ -65,6 +66,26 @@ public class ChatMemberServiceImpl implements ChatMemberService{
 	@Override
 	public boolean updateReadId(int chatId, int userId, int lastreadId) {
 		return chatMemberRepo.updateReadIdWithValue(chatId, userId, lastreadId);
+	}
+
+	@Override
+	public ChatPrivateMemberVo selectPrivateChatMemberView(int userId, int chatId) {
+		return chatMemberRepo.selectPrivateChatMemberView(userId,chatId);
+	}
+
+	@Override
+	public boolean updateJoin(ChatMember chatMember) {
+		return chatMemberRepo.updateJoin(chatMember);
+	}
+
+	@Override
+	public long selectOneJointime(int userId, int chatId) {
+		return chatMemberRepo.selectOneJointime(userId,chatId);
+	}
+
+	@Override
+	public int[] selectChatMemberUserIds(int chatId) {
+		return chatMemberRepo.selectChatMemberUserIds(chatId);
 	}
 
 }

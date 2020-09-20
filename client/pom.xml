@@ -115,7 +115,7 @@
 		<dependency>
 			<groupId>com.naver.fever</groupId>
 			<artifactId>my-chat-app</artifactId>
-			<version>0.0.2</version>
+			<version>0.0.3</version>
 		</dependency>
 	</dependencies>
 	<repositories>

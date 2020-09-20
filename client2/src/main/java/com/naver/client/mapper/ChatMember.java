@@ -9,10 +9,16 @@ public class ChatMember {
 	int chatId;
 	int userId;
 	int lastreadId;
-	boolean act;
+	boolean view;
 	long jointime;
-
+	boolean active;
 	public void update() {
-		this.jointime = System.currentTimeMillis();
+		jointime = System.currentTimeMillis();
+	}
+	public ChatMember(int chatId, int userId, boolean view) {
+		this.chatId = chatId;
+		this.userId = userId;
+		this.view = view;
+		update();
 	}
 }

@@ -27,7 +27,7 @@ public class RedisChatRoomRepo {
 	private static final String ENTER_INFO = "ENTER_INFO"; // 채팅룸에 입장한 클라이언트의 sessionId
 	private static final String CHAT_CNT = "CHAT_CNT"; // 채팅방 총인원 매번 입장할때마다 바뀔수 있으니 확인
 	private static final String CHAT_ENTER_MEMBER = "CHAT_ENTER_MEMBER";// 채팅방에 입장한 userID들
-
+	private static final String USER_LAST_MESSAGE = "USER_LAST_MESSAGE"; //유저가 현재채팅방에서 보고있는 가장 작은 메세지아이디번호
 	/*
 	 * Service
 	 */
@@ -46,6 +46,28 @@ public class RedisChatRoomRepo {
 	private HashOperations<String, String, String> hashOpsChatCnt;
 	@Resource(name = "redisTemplate")
 	private HashOperations<String, Integer, Integer> hashOpsChatEnterMember;
+	@Resource(name = "redisTemplate")
+	private HashOperations<String, Integer, Integer> hashOpsUserLastMessage;
+	
+	/*
+	 * lastMessageId 저장
+	 */
+	public void setUserLastMessage(int userId,int lastMessageId) {
+		hashOpsUserLastMessage.put(USER_LAST_MESSAGE,userId,lastMessageId);
+	}
+	
+	/*
+	 * lastMessageId 조회
+	 */
+	public int getUserLastMessage(int userId) {
+		return hashOpsUserLastMessage.get(USER_LAST_MESSAGE, userId);
+	}
+	/*
+	 * lastMessageId 삭제
+	 */
+	public void removeUserLastMessage(int userId) {
+		hashOpsUserLastMessage.delete(USER_LAST_MESSAGE, userId);
+	}
 
 	/*
 	 * 세션이 어떤 아이디인지 저장
