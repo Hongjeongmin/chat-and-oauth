@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.naver.client.repo.ChatMemberRepo">
+	<insert id="insert" parameterType="chatmember">
+		insert into chatMember(chatId,userId,view,jointime) values(#{chatId},#{userId},#{view},#{jointime})
+	</insert>
+	
+	<update id="updateView" parameterType="chatmember">
+		update chatMember set view = #{view}, jointime =#{jointime} where chatId = #{chatId} and userId = #{userId}
+	</update>
+	
+	<update id="delete" parameterType="int">
+		update chatMember set active = 0 ,view = 0 where chatId = #{chatId} and userId = #{userId}
+	</update>
+	
+	<update id="updateReadTime" parameterType="chatmember">
+		update chatMember set readtime = #{readtime} where chatId = #{chatId} and userId = #{userId}
+	</update>
+	
+	<select id="selectChatUserIds" parameterType="int" resultType="int">
+		select chatId as id from chatMember where userId = #{userId} and active=1
+	</select>
+	
+	<select id="selectChatMemeberIds" parameterType="int" resultType="int">
+		select userId from chatMember where chatId = #{chatId}
+	</select>
+	
+	<select id="selectChatMemebersCnt" parameterType="string" resultType="int">
+		select count(chatId) from chatMember where 	chatId = #{chatId} and active = 1
+	</select>
+	
+	<update id="updateReadId" parameterType="int">
+		update chatMember set lastreadId = (select IFNULL(max(id),0) from chatMessage where chatId=#{chatId}) where chatId= #{chatId} and userId =#{userId};
+	</update>
+	
+	<update id="updateReadIdWithValue" parameterType="int">
+		update chatMember set lastreadId =#{lastreadId}  where chatId= #{chatId} and userId =#{userId};
+	</update>
+	
+	<select id="selectPrivateChatMemberView" parameterType="int" resultType="chatprivatemembervo">
+		select userId as yourId,chatId,view from chatMember where chatId =#{chatId} and userId !=#{userId};
+	</select>
+	
+	<update id="updateJoin" parameterType="chatmember">
+		update chatMember set view=#{view} , jointime=#{jointime} where chatId=#{chatId} and userId=#{userId}
+	</update>
+	
+	<select id="selectOneJointime" parameterType="int" resultType="long">
+		  select jointime from chatMember where userId = #{userId} and chatId=#{chatId};
+	</select>
+	
+	<select id="selectChatMemberUserIds" parameterType="int" resultType="int">
+		select userId from chatMember where chatId =#{chatId} and view = 1
+	</select>
+</mapper>

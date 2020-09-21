@@ -96,6 +96,10 @@ public class RedisChatRoomRepo {
 	public void setChatCnt(String chatId) {
 		hashOpsChatCnt.put(CHAT_CNT, chatId, chatMemberService.selectChatMemebersCnt(chatId) + "");
 	}
+	
+	public void setChatCnt(int chatId) {
+		hashOpsChatCnt.put(CHAT_CNT, chatId+"", chatMemberService.selectChatMemebersCnt(chatId+"") + "");
+	}
 
 	/*
 	 * 채팅방 총인원 조회
@@ -147,6 +151,11 @@ public class RedisChatRoomRepo {
 	 * 채팅방 입장한 유저수 -1
 	 */
 	public long minusUserCount(String chatId) {
+		return Optional.ofNullable(valueOpsUserCount.decrement(USER_COUNT + "_" + chatId)).filter(count -> count > 0)
+				.orElse(0L);
+	}
+	
+	public long minusUserCount(int chatId) {
 		return Optional.ofNullable(valueOpsUserCount.decrement(USER_COUNT + "_" + chatId)).filter(count -> count > 0)
 				.orElse(0L);
 	}

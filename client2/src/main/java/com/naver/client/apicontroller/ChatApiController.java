@@ -83,9 +83,9 @@ public class ChatApiController extends BaseController {
 
 		// TODO token 검증 작업이 필요하다.
 		int userId = Integer.parseInt(jwtTokenProvider.getUserNameFromJwt(token));
-
+		log.info("jwtTokenProvider userId : {}",userId);
 		List<ChatVo> chats = chatService.selectChatList(userId);
-
+		log.info("chatService complete");
 		HashMap<String, Object> map = new HashMap<>();
 		map.put("chats", chats);
 
@@ -114,6 +114,8 @@ public class ChatApiController extends BaseController {
 				if (chatMemberService.delete(chatId, userId)) {
 					successes.add(chatId);
 					chatService.outOfChat(chatId, userId);
+					log.info("setChatCnt");
+					redisChatRoomRepo.setChatCnt(chatId);
 				}
 				/*
 				 * 성공적으로 삭제햇으면 소켓으로 나갔다는 메세지를 날리고 unReadCnt를 계산한값을 다시 보낸다.
@@ -189,6 +191,7 @@ public class ChatApiController extends BaseController {
 			messageSearch.setLastMessageId(Integer.parseInt(lastMessageId));
 			messages = chatMessageService.selectMessageVoLastMessageIdOption(messageSearch);
 		}
+		
 		map.put("messages", messages);
 
 		/*

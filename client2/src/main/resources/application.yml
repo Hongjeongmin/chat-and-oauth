@@ -26,12 +26,12 @@ JeongMin:
   api: /api/user
 
 DaEun:
-  client_id: 
-  secret: 
-  redirect_uri: 
-  target_uri: 
+  client_id: local1600326926267
+  secret: 22f175077979990c4a61aac5a8e8856ff8cfa07ba7bccd1a8df1986a461b8ace
+  redirect_uri: http://localhost:8080/oauth/callback/DaEun
+  target_uri: http://10.113.97.165:8082/auth
   scope:
-  api:
+  api: /user/info
 
 #server:
 #  port: 8080
@@ -61,12 +61,12 @@ DaEun:
 #  api: /api/user
 #
 #DaEun:
-#  client_id: 
-#  secret: 
-#  redirect_uri: 
-#  target_uri: 
+#  client_id: release1600326975746
+#  secret: 0beea3e00f79bf30fedebba8ab05575215c5137b4cbad56dc93df837cf919efe
+#  redirect_uri: http://localhost:8080/oauth/callback/DaEun
+#  target_uri: http://10.113.97.165:8082/auth
 #  scope:
-#  api:
+#  api: /user/info
 
 
 spring:
@@ -80,7 +80,6 @@ spring:
         enabled: false
   freemarker:
     cache: false
-    suffix: .ftl    
   datasource:
     url : jdbc:mysql://10.113.121.48:13306/hjwDB?characterEncoding=UTF-8&serverTimezone=UTC
     username: hjw2

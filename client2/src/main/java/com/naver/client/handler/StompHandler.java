@@ -7,6 +7,7 @@ import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.naver.client.common.JwtTokenProvider;
@@ -35,11 +36,12 @@ public class StompHandler implements ChannelInterceptor {
 
 	@Autowired
 	private ObjectMapper objectMapper;
+
 	@Override
 	public Message<?> preSend(Message<?> message, MessageChannel channel) {
 
 		StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
-
+		log.info("start INFO : message :{} ", message);
 		/*
 		 * CONNECT
 		 */
@@ -72,7 +74,6 @@ public class StompHandler implements ChannelInterceptor {
 			 * 채팅목록 sub인지 채팅 메시지 내 sub인지 구분해야한다. /sub/chat/rooms/{chatId}
 			 * /sub/chat/list/{chatId}
 			 */
-
 			/*
 			 * chatId를 가져온다.
 			 */
@@ -122,50 +123,73 @@ public class StompHandler implements ChannelInterceptor {
 			/*
 			 * 연결이 종료된 클라이언트 sessionId
 			 */
-			String sessionId = (String) message.getHeaders().get("simpSessionId");
-			int userId = redisChatRoomRepo.getSessionInfo(sessionId);
-			log.info("The User is Disconnect userId :{}", userId);
+			int userId = -1;
+			String sessionId =null;
+			try {
+			sessionId = (String) message.getHeaders().get("simpSessionId");
+				log.info("get simpSessionId");
+			}catch(Exception e) {
+				log.info("get simpSessionId Exception {}");
+			}
 
 			/*
 			 * 연결이 종료된 클라이언트의 chatId
 			 */
-			String chatId = redisChatRoomRepo.getUserEnterChatId(sessionId);
+
+			String chatId = null;
+			try {
+				userId = redisChatRoomRepo.getSessionInfo(sessionId);
+				log.info("The User is Disconnect userId :{}", userId);
+
+				chatId = redisChatRoomRepo.getUserEnterChatId(sessionId);
+			} catch (Exception e) {
+				// TODO: handle exception
+				log.info("getSessionInfo Exception : {}");
+			}
 
 			/*
 			 * chatId가 null 이 아니라면 sub/chat/room/{chatId}의 DISCONNECT이기 때문에 Hash에서 지워준다.
 			 */
-			if (chatId != null) {
+			if (chatId != null && userId != -1) {
+				log.info("exit chatId : {}", chatId);
 				/*
 				 * 나가기전에 이채팅방의 가장마지막글을 읽었다고 update해준다.
 				 */
 				chatMemberService.updateReadId(Integer.parseInt(chatId), userId);
-
+				log.info("updateReadId chatId {} , userId{}", chatId, userId);
 				/*
 				 * 채팅방의 인원수를 -1 한다.
 				 */
 				redisChatRoomRepo.minusUserCount(chatId);
+				log.info("minusUserCount chatId {}", chatId);
 
 				/*
 				 * 채팅방에 세션아이디를 삭제한다.
 				 */
 				redisChatRoomRepo.removeUserEnterInfo(sessionId);
-
+				log.info("removeUserEnterInfo sessionId{}", sessionId);
 				/*
 				 * 채팅방에 유저아이디를 삭제한다.
 				 */
 				redisChatRoomRepo.removeChatMembers(Integer.parseInt(chatId), userId);
-
+				log.info("removeChatMembers chatId : {}, userId : {}", chatId, userId);
 				/*
 				 * 유저아이디의 가장마지막 메세지를 저장한걸 삭제한다.
 				 */
 				redisChatRoomRepo.removeUserLastMessage(userId);
+				log.info("removeUserLastMessage suerId : {}", userId);
 			}
-
+			log.info("common");
 			/*
 			 * 저장한 session의 나의 아이디를 삭제한다.
 			 */
-			redisChatRoomRepo.removeSeesionInfo(sessionId);
-
+			try {
+				redisChatRoomRepo.removeSeesionInfo(sessionId);
+				log.info("removeSeesionInfo sessionId : {}", sessionId);
+			} catch (Exception e) {
+				// TODO: handle exception
+				log.info("Exception :");
+			}
 			/*
 			 * 끊어진 경우 해당하는게 맞으면 lastMessageId를 갱신한다.
 			 */
@@ -192,11 +216,12 @@ public class StompHandler implements ChannelInterceptor {
 				/*
 				 * join에 대해서는 핸들러에서 직접 처리한다.
 				 */
-				if(message.getPayload() instanceof byte[]) {
+				log.info("join : {}", userId);
+				if (message.getPayload() instanceof byte[]) {
 					try {
-						byte[] payload = (byte[])message.getPayload();
+						byte[] payload = (byte[]) message.getPayload();
 						ChatJoinDto chatjoinDto = objectMapper.readValue(payload, ChatJoinDto.class);
-						chatService.chatJoin(chatjoinDto,userId);
+						chatService.chatJoin(chatjoinDto, userId);
 					} catch (Exception e) {
 					}
 				}
@@ -205,7 +230,5 @@ public class StompHandler implements ChannelInterceptor {
 		}
 		return ChannelInterceptor.super.preSend(message, channel);
 	}
-	
-	
 
 }

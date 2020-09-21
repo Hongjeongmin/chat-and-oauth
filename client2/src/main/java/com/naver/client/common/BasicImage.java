@@ -1,21 +1,18 @@
 package com.naver.client.common;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.naver.client.repo.ImageRepo;
 
 @Component
 public class BasicImage {
-	public static String[] images = {
-			"https://w.namu.la/s/c0cbe99c2c80f64b57061debbcf27c4d62d5176be25531005d9a972c8a72b488bef39a3c3d066e8089fca1074cfb8b54583f7d2f59ec6316732c6334ec4bb572f972ee7a55d5a3b44101919bc7fdf621558e71210e34e0b8326da4723421469e",
-			"https://w.namu.la/s/3c20e96b6c80526dd7a91ce453b475422221641facf10fdb6b68b565d65a97b078f5aa2436d822783345dd3372dc8db95ffa4837421c4a3004f4a75697932a9472a382f039f98d8688625b04fc6346caa90a95672046047de70a01c9483ee512",
-			"https://w.namu.la/s/2294cebccfe53949b3ba77d247da7421078f45fe2f0e0bb8dc461dab9826b7f9863d6fdf736af793d1fab7edeffc5beb7dbeca05438e4c97a5478f3955dc3dc29f9da392a533d59942464b1f79ca188ab7e9908e72d0d086e9dd943b5dd40c83",
-			"https://ww.namu.la/s/e7907a3e9cfc2a557489cfdaf93ddedaa2ae47a1d629ab0953165fca126ad7f3d8bef5084da7301b439c4076dc20459384f8b848b89ab79ad1995264b2a28ec6d3a88517adfff2fd8cc725a59a514e964146fd19ef4dfea47b2d5257ed5e8c8a",
-			"https://ww.namu.la/s/41ca6eddf85fe1ab5b3a22f9f6774fdd06d665e1bb38b064e878abedd1ae7b48d36f102f039200190ada89dd2d60e84dd24ef071915fd963feff80f4a79f91f6281e48fae78e7b3c19359d685216ab0199707ff345dda9383ee85102ecb820e0",
-			"https://w.namu.la/s/8036ef4b8e4e81e95b825edc74c79eae36bfcb30698bd6f64f9cbd4c73bf48f7326d46462359a4e6d58682b3d75671fea1ed011c2d2421de07365277c2653b6497c585ebbd4bcf6e944a3569e9ec1e23deb692f3183db845369433456cefaa49",
-			"https://ww.namu.la/s/760c8df1d8a6eb442d0351df14b16530be925e576068156408ae300b0a33b34d72f999202e498e8584d5b03c7fdd5159ce0ac067de6678d397890e63af516bb983dba9d26f828c2a06f866f334e7669dd381af2a059cc3779ba83a93d11d1229",
-			"https://ww.namu.la/s/7b4e11cdbad8f7f3e2160ad1e89451369a56c921b58c79663e21644003fcb8e903c10a960344b9af3216cdf8575bed177c31caa59145f397caf82fcaea1b859ba0197ab07c720fdff4ca1737dfd3a4d71e7393b36843667f5f0cbd1f6d4d16da" };
-
-	public static String getRandomImage() {
-		int random = (int) (Math.random() * 8);
-		return images[random];
+	
+	/*
+	 * 1~7까지
+	 */
+	static public int getRandomInt() {
+		int random = (int) (Math.random() * 7)+1;
+		return random;
 	}
 }

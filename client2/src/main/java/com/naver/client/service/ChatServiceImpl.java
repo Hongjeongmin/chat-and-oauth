@@ -1,5 +1,6 @@
 package com.naver.client.service;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -21,7 +22,6 @@ import com.naver.client.repo.ChatMemberRepo;
 import com.naver.client.repo.ChatMessageRepo;
 import com.naver.client.repo.ChatRepo;
 import com.naver.client.repo.ChatUserRepo;
-import com.naver.client.resource.UpdateResource;
 import com.naver.client.vo.ChatMemberVo;
 import com.naver.client.vo.ChatMessageVo;
 import com.naver.client.vo.ChatVo;
@@ -57,10 +57,10 @@ public class ChatServiceImpl implements ChatService {
 
 	@Autowired
 	private RedisChatRoomRepo redisChatRoomRepo;
-	
+
 	@Autowired
 	private ChatUserService chatUserService;
-	
+
 	@Autowired
 	private ChatMemberService chatMemberService;
 
@@ -101,7 +101,6 @@ public class ChatServiceImpl implements ChatService {
 				int chatId = chat.getId();
 				chatMemberRepo.insert(new ChatMember(chatId, myId, true));
 				chatMemberRepo.insert(new ChatMember(chatId, members.get(0), false));
-				
 
 			}
 			// 잇으면 활성화 시켜준다.
@@ -114,7 +113,7 @@ public class ChatServiceImpl implements ChatService {
 				chat.setId(tmp);
 				chat.setCreatetime(chatMember.getJointime());
 			}
-			
+
 		}
 		/*
 		 * GROP대화
@@ -156,7 +155,7 @@ public class ChatServiceImpl implements ChatService {
 			/*
 			 * lastMessage 와 sentAt을 가져온다.
 			 */
-			LastMessageAndAt lastMessageAndAt = chatMessageRepo.selectLastMessageAndAt(chat.getId(),userId);
+			LastMessageAndAt lastMessageAndAt = chatMessageRepo.selectLastMessageAndAt(chat.getId(), userId);
 			/*
 			 * 읽지않은 수를 가져온다.
 			 */
@@ -176,10 +175,10 @@ public class ChatServiceImpl implements ChatService {
 			/*
 			 * 라스트 메세지와 시간 업데이트한다. 만약 라트스메세지가 없을경우 lastAt에 채팅방이 만들어진 시간을 set한다.
 			 */
-			chat.update(lastMessageAndAt, unreadCnt, members, chatMemberRepo, chat.getId(),userId);
+			chat.update(lastMessageAndAt, unreadCnt, members, chatMemberRepo, chat.getId(), userId);
 
 		}
-
+		log.info("chatList get");
 		/*
 		 * lastAt 순으로 오름차순 정렬
 		 */
@@ -255,6 +254,7 @@ public class ChatServiceImpl implements ChatService {
 
 		Map<String, Object> map = new HashMap<>();
 		map.put("message", modelMapper.map(chatMessage, MessageVo.class));
+		map.put("type", "NEWMESSAGE");
 		messaginTemplate.convertAndSend("/sub/chat/rooms/" + chatId, map);
 
 		/*
@@ -267,29 +267,45 @@ public class ChatServiceImpl implements ChatService {
 	}
 
 	@Override
-	public void snedMessage(ChatJoinDto chatJoinDto,int userID) {
-		System.out.println(chatJoinDto.getChatId());
+	public void snedMessage(ChatJoinDto chatJoinDto, int userID) {
 	}
 
 	@Override
 	public String selectType(int chatId) {
 		return chatRepo.selectType(chatId);
 	}
-	
-	
-	//수정이필요하다
+
+	// 수정이필요하다
 	void sendUnreadCntMessage(UnReadCountVo[] messages, int chatId) {
 		for (int id : redisChatRoomRepo.getChatMembers(chatId)) {
 			/*
-			 * 지금 소켓의 참가인원이 조회하고있는 채팅목록만큼만 갱신해라고 보내준다.
-			 * 지금은 그냥 다보내는 수준.
+			 * 지금 소켓의 참가인원이 조회하고있는 채팅목록만큼만 갱신해라고 보내준다. 지금은 그냥 다보내는 수준.
 			 */
-			
-			//TODO 지금 소켓은user가 읽고있는 메세지 아이디이다.
-//			redisChatRoomRepo.getUserLastMessage(id);
-			
+
+			// TODO 지금 소켓은user가 읽고있는 메세지 아이디이다.
+			int checkMessageId = 0;
+			try {
+				checkMessageId = redisChatRoomRepo.getUserLastMessage(id);
+				log.info("lastMessageId : {}", checkMessageId);
+			} catch (Exception e) {
+
+			}
+
+			for (int i = messages.length - 1; i >= 0; i--) {
+				if (messages[i].getId() <= checkMessageId) {
+					/*
+					 * 이값부터 짤라서 보내주면된다.
+					 */
+					messages = Arrays.copyOfRange(messages, i, messages.length);
+					log.info("cut messageId : {}", messages[i].getId());
+
+					break;
+				}
+			}
+
 			Map<String, Object> map = new HashMap<>();
 			map.put("messages", messages);
+			map.put("type", "UNREADCNT");
 			messaginTemplate.convertAndSend("/sub/chat/unreadCnt/" + chatId + "/" + id, map);
 		}
 	}
@@ -307,14 +323,14 @@ public class ChatServiceImpl implements ChatService {
 		StringBuilder content = new StringBuilder();
 		content.append(chatUserService.selectOneName(userId)).append("님이 ");
 		content.append(String.join(", ", invitedUsers)).append("을 초대하였습니다.");
-		
+
 		/*
 		 * Chat Member 활성화
 		 */
 		for (int m : chatJoinDto.getInvitedIds()) {
 			chatMemberService.updateView(new ChatMember(chatJoinDto.getChatId(), m, true));
 		}
-		
+
 		/*
 		 * 채팅방 초대 메시지 전송.
 		 */
@@ -328,6 +344,7 @@ public class ChatServiceImpl implements ChatService {
 		 */
 		chatMessageService.insert(chatMessage);
 		Map<String, Object> map = new HashMap<>();
+		map.put("type", "NEWMESSAGE");
 		map.put("message", modelMapper.map(chatMessage, ChatMessageVo.class));
 		messaginTemplate.convertAndSend("/sub/chat/rooms/" + chatJoinDto.getChatId(), map);
 		Chat chat = chatRepo.selectOne(chatJoinDto.getChatId());
@@ -340,12 +357,12 @@ public class ChatServiceImpl implements ChatService {
 		chatVo.setUnreadCnt(1);
 		List<ChatMemberVo> members = chatUserService.selectChatMembers(chatJoinDto.getChatId());
 		chatVo.setMembers(members);
-		for(int m :chatJoinDto.getInvitedIds())
+		for (int m : chatJoinDto.getInvitedIds())
 			newChatList(m, chatVo);
 	}
 
 	@Override
-	public void newChatList(int userId,ChatVo chatVo) {
+	public void newChatList(int userId, ChatVo chatVo) {
 //		messaginTemplate.convertAndSend("/sub/chat/list/" + userId, new UpdateResource("NEW", chatVo));
 		Map<String, Object> map = new HashMap<>();
 		map.put("type", "NEW");
@@ -354,8 +371,8 @@ public class ChatServiceImpl implements ChatService {
 	}
 
 	@Override
-	public void existChatList(int userId,UpdateChatVo updateChatVo) {
-		log.info("existChatList : /sub/chat/list/{}",userId);
+	public void existChatList(int userId, UpdateChatVo updateChatVo) {
+		log.info("existChatList : /sub/chat/list/{}", userId);
 		Map<String, Object> map = new HashMap<>();
 		map.put("type", "EXIST");
 		map.put("chat", updateChatVo);

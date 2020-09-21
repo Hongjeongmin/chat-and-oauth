@@ -8,6 +8,8 @@
 		<item key="isRegEx" value="false"/>
 		<item key="selection" value=""/>
 		<list key="findhistory">
+			<item value="&#x09;&#x09;&#x09;&#x09;&#x09;String payload = (String)message.getPayload();"/>
+			<item value="act"/>
 			<item value="payload"/>
 			<item value="valueOpsChatCnt"/>
 			<item value="text"/>

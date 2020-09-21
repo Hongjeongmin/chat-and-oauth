@@ -9,9 +9,12 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.Header;
@@ -32,6 +35,7 @@ import com.naver.client.oauth.DaEun;
 import com.naver.client.oauth.JeongMin;
 import com.naver.client.oauth.NaDan;
 import com.naver.client.oauth.WooJae;
+import com.naver.client.repo.ImageRepo;
 import com.naver.client.service.ChatUserService;
 
 @Controller
@@ -56,8 +60,22 @@ public class MainController {
 	WooJae wooJae;
 	
 	@Autowired
-	ModelMapper modelMapper;
+	ImageRepo imageRepo;
 	
+	@Autowired
+	ModelMapper modelMapper;
+	private final Resource indexPage;
+	public MainController(@Value("classpath:/static/index.html") Resource indexPage) {
+		this.indexPage = indexPage;
+	}
+
+	@GetMapping(value = {"/", "/mail","/LoginPage"})
+	public ResponseEntity<Resource> getFirstPage() {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.TEXT_HTML);
+		return new ResponseEntity<>(indexPage, headers, HttpStatus.OK);
+	}
+
 	@GetMapping("/oauth2/authorization/{server}")
 	public String redirectOauth(@PathVariable("server") String server) {
 		OauthInfo oauthInfo = new OauthInfo();
@@ -145,7 +163,7 @@ public class MainController {
 		chatUser.setUsername(id);
 		chatUser.setRefresh_token(refresh_token);
 		chatUser.setAccess_token(access_token);
-		chatUser.setImage(BasicImage.getRandomImage());
+		chatUser.setImage(imageRepo.selectOne(BasicImage.getRandomInt()));
 		
 		/*
 		 * server + _username으로 username을 만든다. 이때 이미 존재하는 user 라면 기존의 id값을 반환한다.
@@ -167,12 +185,13 @@ public class MainController {
 		/*
 		 * 쿠키 저장
 		 */
-		Cookie cookie = new Cookie("access_token", token);
+		Cookie cookie = new Cookie("access-token", token);
 		cookie.setPath("/");
 		cookie.setMaxAge(60 * 60 * 24);
+		cookie.setHttpOnly(false);
 		response.addCookie(cookie);
-
-		return "redirect:/";
+		
+		return "/";
 	}
 	
 	//TODO 추후 제거 예정 현재는 테스트용으로 쓰는 중....
