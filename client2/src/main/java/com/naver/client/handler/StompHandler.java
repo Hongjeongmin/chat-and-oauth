@@ -47,7 +47,9 @@ public class StompHandler implements ChannelInterceptor {
 		 */
 		if (StompCommand.CONNECT == accessor.getCommand()) {
 			/*
+			 * Connect시 JwtToken 필요
 			 * getToken
+			 * 토큰이 안될경우 에러메세지 반환 및 예외처리
 			 */
 			String token = accessor.getFirstNativeHeader("Authorization");
 
@@ -56,6 +58,7 @@ public class StompHandler implements ChannelInterceptor {
 			 */
 			String userId = jwtTokenProvider.getUserNameFromJwt(token);
 			log.info("The user is connected, userId : {}", userId);
+			
 			/*
 			 * connect시 jwtToken을 이용해서 현재 접속중인 소켓의 id값을 저장한다.
 			 */
@@ -74,11 +77,13 @@ public class StompHandler implements ChannelInterceptor {
 			 * 채팅목록 sub인지 채팅 메시지 내 sub인지 구분해야한다. /sub/chat/rooms/{chatId}
 			 * /sub/chat/list/{chatId}
 			 */
+			
 			/*
 			 * chatId를 가져온다.
 			 */
 			String chatId = chatService.getChatId((String) message.getHeaders().get("simpDestination"));
 			if (!"Invalid".equals(chatId)) {
+				
 				log.info("The user is Subscribe, chat  chatId : {}", chatId);
 				/*
 				 * chatId의 총인원수를 redis server에 저장한다.
@@ -105,6 +110,9 @@ public class StompHandler implements ChannelInterceptor {
 				 */
 
 				int userId = redisChatRoomRepo.getSessionInfo(sessionId);
+				/*
+				 * HTTP API 요청 후 소켓요청을 하기때문에 주석처리 , 만약 소켓요청을 먼저한다면 주석을 해제한다.
+				 */
 				// TODO 소켓 연결하기전에 이과정을 이미하므로 일단 주석처리
 				// chatService.updateRealtimeUnreadCount(userId,Integer.parseInt(chatId));
 
@@ -117,11 +125,12 @@ public class StompHandler implements ChannelInterceptor {
 		}
 
 		/*
-		 * 소켓이 끊어진 경우
+		 * DISCONNECT
 		 */
 		else if (StompCommand.DISCONNECT == accessor.getCommand()) {
 			/*
 			 * 연결이 종료된 클라이언트 sessionId
+			 * 같은세션으로 DISCONNECT가 두번 이상발생하면 에러이기때문에 예외처리해준다.
 			 */
 			int userId = -1;
 			String sessionId =null;
@@ -196,7 +205,7 @@ public class StompHandler implements ChannelInterceptor {
 		}
 
 		/*
-		 * 메세지를 보내는 경우
+		 * SEND
 		 */
 		else if (StompCommand.SEND == accessor.getCommand()) {
 			/*
@@ -207,11 +216,10 @@ public class StompHandler implements ChannelInterceptor {
 			/*
 			 * join OR message
 			 */
+			
+			// pub/chat/join
 			String destination = chatService.getDestination((String) message.getHeaders().get("simpDestination"));
 
-			/*
-			 * TODO join 처리 현재는 long-time 요청에대해서 순서가 뒤바뀔수잇음.
-			 */
 			if ("join".equals(destination)) {
 				/*
 				 * join에 대해서는 핸들러에서 직접 처리한다.
@@ -225,7 +233,6 @@ public class StompHandler implements ChannelInterceptor {
 					} catch (Exception e) {
 					}
 				}
-				// TODO 지금은 리턴하고 pub/join이 직접 처리하고 있음.
 			}
 		}
 		return ChannelInterceptor.super.preSend(message, channel);

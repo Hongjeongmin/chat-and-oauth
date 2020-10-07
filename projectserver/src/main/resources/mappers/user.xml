@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.naver.projectserver.repo.UserRepo">
+	<select id="login" parameterType="string" resultType="user">
+		select *
+		from user where username = #{username}
+	</select>
+
+	<update id="update" parameterType="user">
+		update user set pwd = #{pwd}
+		where username = #{username}
+	</update>
+	<update id="updateNickname" parameterType="user">
+		update user set name = #{name}
+		where username = #{username}
+	</update>
+
+	<insert id="signup" parameterType="user">
+		insert into
+		user(username,pwd,name,phone,email) values(#{username},#{pwd},#{name},#{phone},#{email})
+	</insert>
+
+	<select id="select" parameterType="string" resultType="user">
+		select *
+		from user where username = #{username}
+	</select>
+
+</mapper>

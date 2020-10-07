@@ -1,0 +1,41 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>main page</title>
+<style>
+div {
+  border: 1px solid gray;
+  padding: 8px;
+}
+
+h1 {
+  text-align: center;
+  text-transform: uppercase;
+  color: #4CAF50;
+}
+
+p {
+  text-indent: 50px;
+  text-align: justify;
+  letter-spacing: 3px;
+}
+
+a {
+  text-decoration: none;
+  color: #008CBA;
+}
+</style>
+</head>
+<body>
+	<h1>home view</h1>
+	<center>
+		<h2 th:text=${message}>???</h2>
+		<a href="/login">login</a>
+		<br>
+		<a href="/signup">signup</a>
+		<br>
+		<a href="/forgot">Forgot your password</a>
+		<br>
+	</center>
+</body>
+</html>

@@ -113,9 +113,10 @@ public class ChatApiController extends BaseController {
 			} else {
 				if (chatMemberService.delete(chatId, userId)) {
 					successes.add(chatId);
+					redisChatRoomRepo.setChatCnt(chatId);
 					chatService.outOfChat(chatId, userId);
 					log.info("setChatCnt");
-					redisChatRoomRepo.setChatCnt(chatId);
+					
 				}
 				/*
 				 * 성공적으로 삭제햇으면 소켓으로 나갔다는 메세지를 날리고 unReadCnt를 계산한값을 다시 보낸다.

@@ -1,73 +1,72 @@
-server:
-  port: 8080
-
-WooJae:
-  client_id: 207c813d-3b10-4e06-b752-32f3da69d87f
-  secret: 331a74bd-d190-4038-8277-743461b3d1cf
-  redirect_uri: http://localhost:8080/oauth/callback/WooJae
-  target_uri: http://10.106.93.88:8090
-  scope: name email phone
-  api: /api/profile
-
-NaDan:
-  client_id: 3756e414-22b0-414d-8f19-f02e3b3b12c5
-  secret: 2161e111-abd7-400e-9c9b-4f0cdca2e4e4
-  redirect_uri: http://localhost:8080/oauth/callback/NaDan
-  target_uri: http://10.113.93.169:8080
-  scope: name email phone
-  api: /api/user
-
-JeongMin:
-  client_id: M6vYDUHzrpy32G06qe3c8YY7Ehb8Eh1A9W1Qg6Tn4efvn4A442lF37o1TX9b
-  secret: OiWpacIiG1HQ8wBtQy98BpHJf2HX9tW7Vxh64ZOnaft2QYSPhGZA116EWjMc
-  redirect_uri: http://localhost:8080/oauth/callback/JeongMin
-  target_uri: http://10.113.98.87:8080
-  scope: read write trust
-  api: /api/user
-
-DaEun:
-  client_id: local1600326926267
-  secret: 22f175077979990c4a61aac5a8e8856ff8cfa07ba7bccd1a8df1986a461b8ace
-  redirect_uri: http://localhost:8080/oauth/callback/DaEun
-  target_uri: http://10.113.97.165:8082/auth
-  scope:
-  api: /user/info
-
 #server:
 #  port: 8080
 #
 #WooJae:
-#  client_id: cf374e83-54ae-495e-8d37-42ce22addf7e
-#  secret: 01b92f64-bb04-474c-8039-f2d4794609cd
-#  redirect_uri: http://10.113.100.202:8080/oauth/callback/WooJae
+#  client_id: 207c813d-3b10-4e06-b752-32f3da69d87f
+#  secret: 331a74bd-d190-4038-8277-743461b3d1cf
+#  redirect_uri: http://localhost:8080/oauth/callback/WooJae
 #  target_uri: http://10.106.93.88:8090
 #  scope: name email phone
 #  api: /api/profile
 #
 #NaDan:
-#  client_id: 1aa5cac8-768b-4053-aba6-a07124746643
-#  secret: d1682e04-94b2-49ef-8e9a-921184d443cc
-#  redirect_uri: http://10.113.100.202:8080/oauth/callback/NaDan
+#  client_id: 3756e414-22b0-414d-8f19-f02e3b3b12c5
+#  secret: 2161e111-abd7-400e-9c9b-4f0cdca2e4e4
+#  redirect_uri: http://localhost:8080/oauth/callback/NaDan
 #  target_uri: http://10.113.93.169:8080
 #  scope: name email phone
 #  api: /api/user
 #
 #JeongMin:
-#  client_id: 16Qy2329K8P1YVTj5w516021NplecWQP27JK2JqgLR3xtqIP0KTP272Oe492
-#  secret: avaKZr60SMqwa7yE29S17EJulmIh06wy5l57GVZBhCD735zs0I2etou7oos7
-#  redirect_uri: http://10.113.100.202:8080/oauth/callback/JeongMin
+#  client_id: M6vYDUHzrpy32G06qe3c8YY7Ehb8Eh1A9W1Qg6Tn4efvn4A442lF37o1TX9b
+#  secret: OiWpacIiG1HQ8wBtQy98BpHJf2HX9tW7Vxh64ZOnaft2QYSPhGZA116EWjMc
+#  redirect_uri: http://localhost:8080/oauth/callback/JeongMin
 #  target_uri: http://10.113.98.87:8080
 #  scope: read write trust
 #  api: /api/user
 #
 #DaEun:
-#  client_id: release1600326975746
-#  secret: 0beea3e00f79bf30fedebba8ab05575215c5137b4cbad56dc93df837cf919efe
+#  client_id: local1600326926267
+#  secret: 22f175077979990c4a61aac5a8e8856ff8cfa07ba7bccd1a8df1986a461b8ace
 #  redirect_uri: http://localhost:8080/oauth/callback/DaEun
 #  target_uri: http://10.113.97.165:8082/auth
-#  scope:
+#  scope: id name email phone
 #  api: /user/info
 
+server:
+  port: 8080
+
+WooJae:
+  client_id: cf374e83-54ae-495e-8d37-42ce22addf7e
+  secret: 01b92f64-bb04-474c-8039-f2d4794609cd
+  redirect_uri: http://10.113.100.202:8080/oauth/callback/WooJae
+  target_uri: http://10.106.93.88:8090
+  scope: name email phone
+  api: /api/profile
+
+NaDan:
+  client_id: 1aa5cac8-768b-4053-aba6-a07124746643
+  secret: d1682e04-94b2-49ef-8e9a-921184d443cc
+  redirect_uri: http://10.113.100.202:8080/oauth/callback/NaDan
+  target_uri: http://10.113.93.169:8080
+  scope: name email phone
+  api: /api/user
+
+JeongMin:
+  client_id: 16Qy2329K8P1YVTj5w516021NplecWQP27JK2JqgLR3xtqIP0KTP272Oe492
+  secret: avaKZr60SMqwa7yE29S17EJulmIh06wy5l57GVZBhCD735zs0I2etou7oos7
+  redirect_uri: http://10.113.100.202:8080/oauth/callback/JeongMin
+  target_uri: http://10.113.98.87:8080
+  scope: read write trust
+  api: /api/user
+
+DaEun:
+  client_id: release1600326975746
+  secret: 0beea3e00f79bf30fedebba8ab05575215c5137b4cbad56dc93df837cf919efe
+  redirect_uri: http://10.113.100.202:8080/oauth/callback/DaEun
+  target_uri: http://10.113.97.165:8082/auth
+  scope: id name email phone
+  api: /user/info
 
 spring:
   jwt: 

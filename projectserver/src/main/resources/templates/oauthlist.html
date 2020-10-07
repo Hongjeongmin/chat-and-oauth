@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout">
+<head>
+<meta charset="UTF-8">
+<title>clientApp_List</title>
+<style>
+#customers {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	border-collapse: collapse;
+	width: 80%;
+}
+
+#customers td, #customers th {
+	border: 1px solid #ddd;
+	padding: 8px;
+}
+
+#customers tr:nth-child(even) {
+	background-color: #f2f2f2;
+}
+
+#customers tr:hover {
+	background-color: #ddd;
+}
+
+#customers th {
+	padding-top: 12px;
+	padding-bottom: 12px;
+	text-align: left;
+	background-color: #4CAF50;
+	color: white;
+}
+</style>
+</head>
+<body>
+	<h1>Client_App_List</h1>
+	<br>
+	<table id="customers">
+		<tr>
+			<th>appname</th>
+			<th>client_id</th>
+			<th>client_secret</th>
+			<th>web_server_redirect_uri</th>
+			<th>재발급</th>
+			<th>삭제</th>
+		</tr>
+		<tbody>
+			<tr th:each="client_manager : ${client_managers}">
+				<td th:text="${client_manager.appname}">appname</td>
+				<td th:text="${client_manager.client_id}">clinent_id</td>
+				<td th:text="${client_manager.client_secret}">client_secret</td>
+				<td th:text="${client_manager.web_server_redirect_uri}">client_secret</td>
+				<td><a th:href="@{/update(client_id=${client_manager.client_id})}">재발급</a></td>
+				<td><a th:href="@{/delete(client_id=${client_manager.client_id})}">삭제</a></td>
+			</tr>
+		</tbody>
+	</table>
+	​
+
+</body>
+</html>

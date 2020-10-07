@@ -22,6 +22,7 @@ import com.naver.client.repo.ChatMemberRepo;
 import com.naver.client.repo.ChatMessageRepo;
 import com.naver.client.repo.ChatRepo;
 import com.naver.client.repo.ChatUserRepo;
+import com.naver.client.vo.ChatExitVo;
 import com.naver.client.vo.ChatMemberVo;
 import com.naver.client.vo.ChatMessageVo;
 import com.naver.client.vo.ChatVo;
@@ -256,7 +257,14 @@ public class ChatServiceImpl implements ChatService {
 		map.put("message", modelMapper.map(chatMessage, MessageVo.class));
 		map.put("type", "NEWMESSAGE");
 		messaginTemplate.convertAndSend("/sub/chat/rooms/" + chatId, map);
-
+		
+		/*
+		 * 나갔다메세지 갱신
+		 * /sub/chat/group/exit/{chatId}
+		 */
+		ChatExitVo chatExitVo = new ChatExitVo(userId);
+		
+		messaginTemplate.convertAndSend("/sub/chat/rooms/" + chatId, chatExitVo);
 		/*
 		 * 갱신된 unReadCnt 보내기
 		 */
@@ -302,7 +310,10 @@ public class ChatServiceImpl implements ChatService {
 					break;
 				}
 			}
-
+//			System.out.println(id+"<<<<<<");
+//			for(UnReadCountVo m : messages) {
+//				System.out.println(m.getId() +" "+m.getUnreadCnt());
+//			}
 			Map<String, Object> map = new HashMap<>();
 			map.put("messages", messages);
 			map.put("type", "UNREADCNT");

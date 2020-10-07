@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>forgot</title>
+
+</head>
+<body>
+	<h1>Please enter your ID</h1>
+	<form th:action="@{/forgot}" method="post">
+		<p>Username      : <input type="text" name="username"> </p>
+		<p><input type="submit" value="getPassword"/></p>
+	</form>
+</body>
+</html>

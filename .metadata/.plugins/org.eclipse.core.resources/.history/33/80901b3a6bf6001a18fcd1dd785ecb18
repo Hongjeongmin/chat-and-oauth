@@ -1,8 +1,0 @@
-package com.naver.client.vo;
-
-public class MessageVo {
-	int chatId;
-	int userId;
-	String content;
-	long sentAt;
-}

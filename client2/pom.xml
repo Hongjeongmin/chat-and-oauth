@@ -108,14 +108,14 @@
 			<artifactId>embedded-redis</artifactId>
 			<version>0.7.2</version>
 			<!-- local 환경에서는 이거사용하기 위해서 test 주석처리 -->
-			<!-- <scope>test</scope> -->
+		<!-- 	<scope>test</scope> -->
 		</dependency>
 
 		<!-- naver -->
 		<dependency>
 			<groupId>com.naver.fever</groupId>
 			<artifactId>my-chat-app</artifactId>
-			<version>0.0.5</version>
+			<version>0.2.2</version>
 		</dependency>
 	</dependencies>
 	<repositories>

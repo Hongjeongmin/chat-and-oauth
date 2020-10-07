@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.naver.projectserver.repo.Client_managerRepo">
+	<insert id="insert" parameterType="client_manager">
+		insert into client_manager(username,client_id,client_secret,appname,web_server_redirect_uri)
+		values(#{username},#{client_id},#{client_secret},#{appname},#{web_server_redirect_uri})
+	</insert>
+	<delete id="delete" parameterType="String">
+		delete from client_manager where client_id = #{client_id}
+	</delete>
+	
+	<select id="select" parameterType="client_manager" resultType="client_manager">
+		select * from client_manager where username = #{username}
+	</select>
+	<update id="updateAppname" parameterType="client_manager">
+		update client_manager set appname =#{appname} where client_id = #{client_id}
+	</update>
+	
+	<update id="updateSecret" parameterType="client_manager">
+	update client_manager set client_secret =#{client_secret} where client_id = #{client_id}
+	</update>
+</mapper>
