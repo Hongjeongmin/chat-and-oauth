@@ -41,9 +41,13 @@ Scope는 토큰의 권한의 유효성이다. 다음과같이 read trust write �
 
 ![chat Descripion](https://user-images.githubusercontent.com/30316976/103128718-c9a7d880-46d9-11eb-803d-a949de8c6bae.png)
 
+![chat1](https://user-images.githubusercontent.com/30316976/103128731-d4626d80-46d9-11eb-9e2a-837b2398ece9.png)
 
+![chat2](https://user-images.githubusercontent.com/30316976/103128743-df1d0280-46d9-11eb-866f-5989f52c7ef5.png)
 
+![chat3](https://user-images.githubusercontent.com/30316976/103128767-ef34e200-46d9-11eb-88eb-286174e9b1b8.png)
 
+![chat4](https://user-images.githubusercontent.com/30316976/103128776-f78d1d00-46d9-11eb-9d13-06658a965b2b.png)
 
 
 
