@@ -29,7 +29,7 @@ ChatServer에서 로그인을 할 때 Oauth(인증/인가)서버에서 Jwt Token
 Google , FaceBook, KaKao등 현재 Oauth를 사용하는 서비스에서 가장 많이 사용하는 방식이다.
 3가 인증방식이면 Https에서 정보를 교환한다는 전제에서는 안정성이 매우 뛰어난 인증 플로우이다.
 
-![https://user-images.githubusercontent.com/30316976/103128703-b85ecc00-46d9-11eb-804c-d058681c0e9b.png)
+![scope](https://user-images.githubusercontent.com/30316976/103128703-b85ecc00-46d9-11eb-804c-d058681c0e9b.png)
 
 Scope는 토큰의 권한의 유효성이다. 다음과같이 read trust write 세분류로 나눠서 API  요청에대한 권한을 세분화 하여 사용성을 증가시켰다.
 
